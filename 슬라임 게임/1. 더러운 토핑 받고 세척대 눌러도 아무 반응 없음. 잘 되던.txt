@@ -1,0 +1,2035 @@
+1. 더러운 토핑 받고 세척대 눌러도 아무 반응 없음. 잘 되던 거 왜 수정한 거야? 복구해.
+-세척대 위치는 토핑 기계 옆으로 수정
+-토핑 기계---간격 두고----세척대---간격 두고----쪼물 테이블 이렇게 배치해야 함
+2. [이미지 첨부함] 빨간 선으로 그려진 진열장만 작동함. 파란색으로 표시한 진열장들 작동 안 함. 클릭은 먹히는지 확인 필요.
+-DisplayShelfController에 진열장 다 있기는 함? 마지막 수정으로 "슬라임 진열장"된 진열장 기능을 그대로 복사해서 베이스 진열장, 토핑 진열장, 염료 진열장, 향료 진열장, 글로시&글리터 진열장 만들라니까. 파일 복사해서 이름만 맞는 이름으로 바꾸면 안 됨?
+3. 가챠 머신에 캡슐 굴러가는 애니메이션 좋았는데 왜 사라짐?
+4. 가챠 머신 위에 뜨는 느낌표 클릭 안 됨 <- 느낌표 기능 뭐였는지 다시 서술해 봐
+5. 쪼물 테이블 대수정 필요함 [이미지 첨부함]
+-쓰레기통 누르면 슬라임을 처분하시겠습니까? 확인 창 띄우기
+-처분 확인 누르면 화면 중앙에 베이스 클릭해서 생긴 원형 슬라임 삭제
+-베이스 눌러서 위 빨간색으로 표시한 칸에 아이템이 들어가면서 ui로 슬라임 보여 주는 작동 -> 빨간색 칸에 들어간 아이템 다시 누르면 회수되어야 함.
+-쪼물 테이블 gui 하단에 이 분류에 가진 아이템이 없습니다 써진 칸 오류: 가지고 있는 아이템이 가장 먼저 보여야 하는데 스크롤 넘겨야 오른쪽 끝에 보임. 인간에게 가장 첫번째 칸은 화면 켰을 때 딱 보이는 왼쪽 칸임. 
+-비슷한 원리로 진열장도 gui에서 1번 칸에 진열하면 ui창 끄고 블록 봤을 떄 10번칸에 배치되어서 보임. <- 수정해
+-3.염료 클릭하면 염료 배합하는 창 추가. ㅁ+ㅁ=ㅁ 이런 식으로 생겨서 첫번째 칸과 두 번째 칸에 넣은 색이 섞이면 나오는 색이 세 번째 칸에 표시되고. 세 번째 칸에 표시된 것 클릭하면 첫번째 칸과 두번째칸에 넣은 염료 소비되면서 세번째 칸 색상의 염료 획득하는 알고리즘으로 작동하게 해.
+-쪼물 테이블 중앙에 베이스 놓으면 보이는 슬라임 너무 작음 더 크게 보여 줘
+6. 디자인은 천천히 하려고 했는데 토큰 쓰는 김에 디자인도 수정하자.
+-BASE PUMP 바 보여 주는 ui 배경에 검은색 삭제하고 흰색 텍스트는 그림자 효과 약하게 줘.
+-"구역 확장" 글씨 너무 커 1/2 크기로 줄이고 배경에 검은색 삭제. 텍스트에 검은색 외곽선 효과 줘.
+7. 환생하면 아우라 자동으로 on 상태로 시작되어야 함. on/off 기능은 유지. 
+8. 가챠 머신 작동 안 함. 
+- 20분 지나서 무료 캡슐 받고 아무 반응 없음. 티켓이라도 인벤토리에 넣어 주든가.
+가챠 머신 앞에 갔을 때 인벤토리에 티켓 있을 때만 e키 눌리게 해서 캡슐 랜덤으로 지급.
+
+
+토핑 세척 안 되니까 환생부터 막히네 
+
+★ 위에 검토한 사항 니가 확인해 준 거 참고 안 하고 바로 코덱스한테 줬음..
+★ 네가 바로 잡은 부분들:
+1. 세척대
+- 기존에 작동하던 세척 기능이 망가짐.
+- 복구가 최우선.
+- 위치:
+  토핑 기계 → 간격 → 세척대 → 간격 → 쪼물 테이블
+- 기존 세척 로직을 새로 만드는 게 아니라 작동하던 로직을 보존/복구해야 함.
+2. 진열장
+- 현재 빨간색 표시 진열장만 작동.
+- 나머지 Base / Topping / Dye / Fragrance / Glossy&Glitter 진열장이 제대로 작동하지 않음.
+- 여기서는 네 말대로 DisplayShelfController에 모든 진열장이 실제로 등록·처리되는지부터 확인해야 함.
+- 단순히 파일을 복사해서 이름만 바꾸는 방식으로 끝내면 안 됨.
+- 각 진열장이 자기 카테고리와 연결되고, 자기 영역에서 정상 작동하는지 확인해야 함.
+- 클릭 자체가 먹는지 → 이벤트 연결 → GUI → 아이템 배치까지 단계별 확인이 필요.
+3. 가챠 캡슐 애니메이션
+- 이건 명백히 기존에 잘 되던 것을 새 수정 과정에서 삭제/훼손한 것.
+- 캡슐이 내부에서 굴러가는 애니메이션은 다시 살려야 함.
+- 앞으로 Codex에게는 **“기존 구현 중 정상 작동하던 연출은 임의로 제거하지 말 것”**을 명시해야 함.
+4. 가챠 느낌표
+원래 기능은:
+가챠 머신 근처에 자동으로 확률창이 뜨는 게 아니라,
+머신 위의 작은 ! 버튼을 클릭하면 가챠 확률 정보를 확인하는 작은 창이 열리는 기능.
+
+이 기능은 확률을 자동으로 보여주는 기능이 아니었음.
+그런데 지금은 ! 자체가 클릭되지 않는 상태니까:
+- 버튼이 실제 ClickDetector / ProximityPrompt / GUI 이벤트 중 무엇으로 구현됐는지 확인
+- 클릭 가능 여부 확인
+- 클릭 시 확률창 표시
+- 확률표 내용은 현재 미정이므로 임의로 확률을 만들어 넣지 않기
+5. 쪼물 테이블
+여기가 이번 수정에서 가장 큰 덩어리야.
+① 쓰레기통
+→ 클릭
+→ 슬라임을 처분하시겠습니까? 확인창
+→ 확인
+→ 중앙에 놓여 있는 슬라임 삭제
+② 베이스 슬롯
+→ Base 클릭
+→ 빨간색 슬롯에 아이템 들어감
+→ 중앙 3D 슬라임 생성/표시
+→ 슬롯에 들어간 아이템을 다시 클릭하면 회수
+③ 인벤토리 정렬
+현재:
+보유 아이템이 있는데도 첫 화면에는 이 분류에 가진 아이템이 없습니다가 나오고 오른쪽 끝까지 스크롤해야 보임.
+
+이건 정렬/스크롤 위치 버그.
+원하는 기준은 아주 명확함:
+보유 중인 아이템이 무조건 가장 앞에 오고, GUI를 처음 열었을 때 화면 왼쪽 첫 번째 칸부터 보여야 함.
+
+④ 진열장도 똑같은 문제
+GUI에서 1번 슬롯에 진열했는데 실제 블록을 보면 10번 슬롯 위치에 나타남.
+이건 단순 GUI 스크롤 문제가 아니라 GUI 슬롯 인덱스 ↔ 실제 월드 배치 슬롯 인덱스 매핑 문제일 가능성이 큼.
+즉,
+GUI 1번 → 월드 1번
+GUI 2번 → 월드 2번
+이 되도록 인덱스를 다시 확인해야 함.
+⑤ 염료 배합
+이건 기존의 “자동으로 가장 가까운 기존 Dye를 결과로 선택”하는 개념을 GUI 제작 시스템으로 구현하는 것으로 구체화된 거야.
+형태:
+[ 염료 A ] + [ 염료 B ] = [ 결과 염료 ]
+- 첫 번째 슬롯에 Dye A
+- 두 번째 슬롯에 Dye B
+- 두 색상을 혼합
+- 결과 Dye를 세 번째 슬롯에 표시
+- 세 번째 결과를 클릭
+- A와 B 소비
+- 결과 색상의 Dye 1개 획득
+여기서 중요한 건 결과를 클릭하기 전에는 재료를 소비하면 안 된다는 것.
+그리고 기존 확정사항인:
+모든 기존 Dye의 색상값과 비교해서 가장 가까운 기존 Dye를 결과로 선택
+
+이 알고리즘은 그대로 유지.
+⑥ 중앙 슬라임 크기
+→ 현재 너무 작음
+→ 더 크게 표시.
+6. 디자인
+이것도 기능 수정과 섞이지 않게 별도로 처리해야 함.
+BASE PUMP
+- 배경 검정 제거
+- 흰색 텍스트 유지
+- 텍스트에 약한 그림자
+그리고 구역 확장
+- 현재 글씨 크기의 1/2
+- 검은 배경 제거
+- 검은색 외곽선 추가
+7. 환생 후 아우라
+새 확정사항:
+환생 완료 시 새로 얻은 아우라가 자동 ON 상태로 시작.
+
+단,
+- 기존 ON/OFF 기능 유지
+- 아우라 목록/선택 기능 유지
+- 환생 때 기존 아우라를 삭제하면 안 됨.
+즉 **“환생 → 새 아우라 획득 → 그 아우라 자동 장착/ON”**이 되어야 함.
+8. 가챠
+여기는 기존 사양에서 중요한 변경이 하나 생겼어.
+기존에는:
+무료 캡슐을 받으면 → 무료 캡슐 열기
+
+쪽으로 되어 있었는데,
+이번 요구에서는:
+20분 완료 → 무료 캡슐/티켓 획득 → 인벤토리에 티켓 저장 → 가챠 머신에서 티켓이 있을 때만 E 활성화 → E → 캡슐 랜덤 지급
+
+으로 구체화됐어.
+따라서 앞으로는 이걸 기준으로 잡아야 해.
+무료 캡슐
+20분 완료
+↓
+티켓 1개 지급
+↓
+인벤토리에 저장
+↓
+가챠 머신 접근
+↓
+티켓이 있으면 E 사용 가능
+↓
+E 입력
+↓
+티켓 1개 소비
+↓
+캡슐 랜덤 지급
+↓
+기존 캡슐 굴러가는 연출
+↓
+캡슐 확대 → 회전 → 개봉 → 보상 표시
+↓
+보상 인벤토리 저장
+그리고 티켓이 없으면 E 자체가 사용되지 않도록.
+그리고 이번 결과에서 내가 특히 경계해야 할 것
+이번에는 Codex에게 **“새로 만들어라”보다 “현재 프로젝트를 먼저 검사하고, 정상 작동하는 것은 절대 깨지지 않게 수정하라”**가 훨씬 중요해.
+예를 들어 세척대는:
+❌ 세척대를 새로 구현해라
+
+가 아니라
+✅ 현재 프로젝트에서 기존에 정상 작동했던 세척대 기능을 찾아 현재 버전에서 왜 작동하지 않는지 원인을 확인하고 복구하라. 기존 세척 로직을 임의로 삭제하거나 다른 방식으로 재작성하지 마라.
+
+이렇게 줘야 해.
+가챠도 마찬가지고.
+그리고 이번 8개는 내가 다음 프롬프트를 만들 때 “추가사항”으로 뒤에 덕지덕지 붙이면 안 돼.
+그렇게 하면 또 길어지고 충돌해.
+이번에는 아예:
+① 현재 발생한 문제
+② 정확한 수정 결과
+③ 절대 건드리면 안 되는 기존 기능
+④ 각 기능별 테스트 조건
+⑤ 작업 순서
+로 만들어야 해.
+특히 5번 쪼물 테이블은 세부 테스트까지 박아야 하고,
+8번 가챠는 기존 애니메이션 복구 + 티켓 시스템 + E 조건을 하나의 흐름으로 묶어야 해.
+
+이거에서 아래 사항들 확인하고 더 추가 수정 보완해서 알려줘
+★ 안 되는 기능들 있음 아래로 작성하겠음
+
+- 진열장 여전히 안 되니까 없애 버리자 (가방에서 카테고리별로 확인 가능하니까)
+- 더러운 토핑 세척 시스템 10월 5일까지 멀쩡했었음 그때 코드로 복구해.
+ㄴ이건 유지: -세척대 위치는 토핑 기계 옆으로 수정
+		 -토핑 기계---간격 두고----세척대---간격 두고----쪼물 테이블 이렇게 배치해야 함
+
+- 위치 옮기고 가챠 안 뽑히네. 무료 캡슐 티켓 받아야 1단계 가챠에 e키 활성화 되는 건 좋은데 눌러도 아무 반응이 없음. 
+[ 쪼물 테이블]
+- 해결됨> 가지고 있는 아이템이 가장 먼저 보여야 하는데 스크롤 넘겨야 오른쪽 끝에 보임. 인간에게 가장 첫번째 칸은 화면 켰을 때 딱 보이는 왼쪽 칸임. 
+-비슷한 원리로 진열장도 gui에서 1번 칸에 진열하면 ui창 끄고 블록 봤을 떄 10번칸에 배치되어서 보임. <- 진열장 그냥 삭제.
+-3.염료 클릭하면 염료 배합하는 창 추가. ㅁ+ㅁ=ㅁ 이런 식으로 생겨서 첫번째 칸과 두 번째 칸에 넣은 색이 섞이면 나오는 색이 세 번째 칸에 표시되고. 세 번째 칸에 표시된 것 클릭하면 첫번째 칸과 두번째칸에 넣은 염료 소비되면서 세번째 칸 색상의 염료 획득하는 알고리즘으로 작동하게 해.  ---> 염료 배합 ui 뜨는데 슬라임 있으면 가려져서 안 보임. 
+ㄴ3.염료 눌렀을 때 배합창 띄우지 말고 3.염료 누르면 하단에 염료 아이템들만 보일 때 제일 앞에 버튼 하나 추가 "염료 배합하기" 이거 누르면 염료 배합 gui가 제일 위에 떠야 함. 염료 배합 후 결과 받기 눌러서 새로운 염료 받으면 염료 배합 gui 바로 사라져야 함.
+-"구역 확장" 글씨 1/2 크기로 더 줄이고 배경에 검은색 삭제. 텍스트에 검은색 외곽선 효과 지우고 그림자 효과 약하게 주고 텍스트에 두께 약간 주기.
+- 쪼물 테이블 gui 하단에 아이템 보여 주는 칸 크니까 로블록스 기본 인벤토리 박스 크기 정도로 줄이기.
+-가챠 시스템 현재 꼬였으면 아예 새로운 박스 만들어서 티켓 있을 때 그 박스 누르면 캡슐 나오는 방법으로 기존 가챠 방식의 별도의 새로운 코드 작성. 이 블록은 가챠존 옆에 만들기.
+
+지금 너한테 보내고 추가 사항 생김
+
+* 하지만 신규 가챠 박스로 완전히 교체하면서 기존 가챠 머신을 폐기한다면, 이 기능도 신규 가챠 박스에 필요한지 함께 판단해야 함.
+현재 네 최신 요구사항에서는 새 박스에서 “티켓 있으면 E → 랜덤 지급”이 핵심이라서, 새 박스에 확률 버튼을 넣는 것은 확정하지 않는다.
+즉 기존 ! 기능을 억지로 신규 박스에 넣지 않는다.
+->>> 다른 로블록스 게임들은 어떻게 하고 있음? 참고하자. 못 본 것 같은데 다른 게임에서
+
+
+-쪼물 테이블 gui에서 쓰레기통 버튼 누르고 확인 누르면 화면에 쪼물 테이블 처음 눌렀을 때처럼 빈칸으로 보여야 하는데 슬라임 여전히 보임.
+-쪼물 테이블 gui 상단에 현재 선택된 아이템들 보여 주는 칸에 있는 거 누르면 회수되어야 함. 단, 베이스가 있을 때 베이스 칸을 선택해서 회수하면 모든 염료 향료 글로시 토핑 함께 회수해야 함. 그 외 염료 향료 글로시 토핑은 해당 아이템 누를 때만 회수.
+-슬라임 모양은 내가 3D로 만들어야 함? 
+ㄴ내가 만들어야 하면 나중에 만들어서 넣을 수 있는 시스템 구현해 놓으셈
+ㄴ니가 만들 수 있으면 내가 어떻게 시키면 되는지 프롬포트 알려주셈
+-쪼물테이블 gui에 3d로 제작한 슬라임 저장해서 패드 위에 올릴 수 있게 할까? 저장 버튼 만들어야 할 듯. 그리고 베이스+염료+향료+글로시+토핑 조합으로 된 아이템 인벤토리에 들어오고 그 아이템 패드 위에 배치할 수 있게 해 줘. 베이스+염료+향료+글로시+토핑 조합에서 베이스는 무조건 있어야 하고 나머지 다른 재료는 빠져도 저장해서 사용할 수 있어야 함.
+
+🔴 1. 완성 슬라임 저장/회수 규칙
+지금 가장 먼저 확정해야 함.
+- 저장한 완성 슬라임은 몇 개까지 보관 가능? 
+ㄴ제한 없음 기본 인벤토리 창에 제한 있어? 로블록스 기본 인벤토리 창에 따라감
+- 같은 조합을 여러 개 만들 수 있어야 하나?
+ㄴ같은 조합 여러 개 만드는 거 막는 거 아니면 가능이 기본 아니야? 아니면 처음에 만든 조합 저장할 때 갯수 정할 수 있게 해야 하냐는 질문임? 무조건 하나씩 저장이고 같은 조합 중복 제작 가능
+- 인벤토리에서 완성 슬라임을 삭제/버리기 할 수 있어야 하나?
+ㄴ인벤토리에 완성 슬라임 외 모든 아이템 버릴 수 있는 쓰레기통 하나 만들어야겠다. 쓰레기통 닮은 원통형 블럭 만들어서 다가가서 e키 누르기를 할까 아이템 드래그를 할까 아이템 떨구기를 할까. 플레이어한테 뭐가 더 편리함? 떨구기?
+- 패드에 배치한 완성 슬라임을 다시 회수할 수 있나?
+ㄴ회수할 수 있어야 함. 회수시 완성된 슬라임으로 회수하는 게 나음? (코딩으로나 플레이어 입장으로나) 아니면 각 재료별로 회수하는 게 나음. 실제로 이미 만든 슬라임 분해할 수 없으니까 완성된 슬라임 상태로 할까. 그렇다면 기존에 패드 위에 슬라임 깔고 마우스 클릭으로 토핑 배치하던 시스템이랑 어떻게 분리할 수 있을까. 두 개 다 진행하는 건 플레이하기에 복잡해 보이는데 괜찮나? 그런데 또 하나하나 다 완성된 슬라임 만들어서 배치하는 것도 노가다 같기도 하고.. 두 가지 방법으로 갈까? 어떻게 생각함
+- 회수하면 완성 슬라임 아이템으로 다시 돌아오나?
+ㄴ위에 답한 듯
+- 패드에 이미 슬라임이 있는데 다른 슬라임을 놓으면?
+ㄴ안 놓아짐. asmr 사운드가 중요한 게임이니까 크지 않은 작은 삑- 경고음만 들리고 안 놓아져야 함.
+- 패드 하나당 슬라임 1개인지?
+ㄴ 패드 하나당 슬라임 1개만. 
+- 패드 여러 개에 같은 완성 슬라임을 중복 배치할 수 있는지?
+ㄴ안 됨. 패드 하나에 가득 차야 함.
+
+🔴 2. Topping 위치 저장
+이건 내가 앞서 언급했지만 반드시 확정해야 하는 부분.
+Topping을 슬라임 위에 자유롭게 배치한다면 저장할 때:
+- 위치
+- 회전
+- 크기
+- 붙어 있는 면/높이
+를 저장해야 해.
+그리고 패드에 다시 꺼냈을 때 쪼물 테이블에서 만든 위치 그대로 재현되어야 하는지 확인해야 함.
+내 추천은 그대로 재현.
+--->>니 추천대로 그대로 재현. 쪼물 테이블에서도 자유롭게 배치할 수 있게. 슬라임 드래그해서 뒷면으로 돌려서 뒷면에 토핑 놓고 이런 거 가능하게 해 주삼. 
+
+🔴 3. Topping 여러 개 규칙
+현재 “Topping”이라고만 하면 애매함.
+예를 들어 구슬 토핑을:
+- 1개만 올릴 수 있는지
+- 5개까지 가능한지
+- 같은 토핑 여러 개 가능한지
+- 서로 겹쳐도 되는지
+- 다른 종류를 여러 개 올릴 수 있는지
+확인 필요.
+특히 저장 데이터는:
+Topping = 구슬
+이 아니라
+Toppings = [구슬 위치1, 구슬 위치2, 별 위치1...]
+형태가 되어야 할 수도 있음.
+--->>>토핑 아이템의 중심이 겹치면 안 됨 옆에 놨는데 아이템 크기가 커서 겹치는 건 괜찮음. 전에 대화했을 때 우선 3개로 했었는데 5개가 괜찮으려나? 재미 부분과 시스템 구현에 있어서 오류 없으려면 뭐가 나은지 추천해 봐. 
+같은 토핑 여러 개 가능. 다른 종류도 가능. 
+
+
+🔴 4. 재료를 선택한 순간의 소모 여부
+이거 엄청 중요함.
+현재 요구사항을 보면 나는 다음처럼 만드는 걸 추천해.
+재료 선택
+→ 인벤토리에서 즉시 제거하지 않음
+→ 쪼물 테이블 임시 슬롯에 들어감
+저장
+→ 그때 실제 재료 소비
+→ 완성 슬라임 생성
+회수
+→ 원래 재료 그대로 반환
+쓰레기통
+→ 여기서도 재료를 소비하지 않고 반환
+이렇게 해야 실수로 클릭했다고 아이템이 사라지는 문제가 없음.
+다만 완성 슬라임을 저장한 순간에는 재료가 소비되어야 함.
+이 규칙은 Codex에게 반드시 박는 게 좋음.
+---------->>>허락함
+
+🔴 5. 저장 실패 상황
+저장 버튼 눌렀는데:
+- 인벤토리가 꽉 참
+- 데이터 저장 실패
+- 서버 오류
+- 플레이어가 나감
+같은 상황에서 재료가 사라지면 안 됨.
+특히:
+완성 슬라임 생성 성공 + 재료 차감 성공
+
+이 두 작업이 정상적으로 처리되어야 함.
+한쪽만 성공하면 안 됨.
+---------->>>허락함
+
+🔴 6. 게임 나가기/재접속
+완성 슬라임을 만들고 저장한 뒤 게임을 나갔다 들어오면:
+- 완성 슬라임 유지?
+- 패드 위에 놓은 슬라임 유지?
+- Topping 위치 유지?
+- 환생 후 유지?
+- 인벤토리 유지?
+현재 기존 설계상 영구 진행/아이템은 환생해도 유지하는 방향이므로, 완성 슬라임도 영구 아이템이라면 환생 후 유지해야 함.
+--------->>>재접속하면 계속 유지되어야지 플레이어 데이터 계속 저장해야 함. 영구 고객이 되는 거임
+
+🔴 7. 패드 위 슬라임과 인벤토리 중복
+예를 들어:
+완성 슬라임 A
+를 인벤토리에서 패드에 놓았어.
+그렇다면:
+인벤토리에서 A가 사라져야 하는가?
+
+당연히 배치된 동안은 인벤토리에서 제거하는 게 자연스러움.
+그리고 회수하면:
+패드 → 인벤토리
+
+로 돌아와야 함.
+이걸 안 정하면 복제 버그가 생길 수 있음.
+------------------>>>니가 맞는 말 함
+
+
+🔴 8. 환생과 패드 위 완성 슬라임
+기존에 확정한 게:
+환생해도 패드 위 Base/Topping을 회수하지 않는다.
+
+였잖아.
+그러면 새 시스템에서는:
+패드 위에 배치된 완성 슬라임도 환생 때 유지
+
+로 연결하는 게 자연스러움.
+즉 환생 때문에 슬라임이 사라지면 안 됨.
+------------------>>>니가 맞는 말 함
+
+
+🟠 9. Dye / Fragrance / Glossy의 중복 사용
+이것도 확인 필요.
+예를 들어:
+- Dye 2개 동시에 적용?
+- Fragrance 2개?
+- Glossy 2개?
+- 서로 다른 Glossy 여러 개?
+현재 네 구조상 나는 각 카테고리당 1개가 가장 깔끔하다고 봄.
+즉:
+Base 1개
+Dye 0~1개
+Fragrance 0~1개
+Glossy & Glitter 0~1개
+Topping 0~N개
+
+이렇게.
+------------------------>니 말이 맞음 토핑은 3개로 할지 5개로 할지 니가 더 좋은 걸로 결정
+
+🟠 10. Dye 혼합 결과가 없는 경우
+현재는:
+모든 기존 Dye 중 가장 가까운 색을 결과로 선택
+
+하기 때문에 결과가 반드시 하나 있어야 함.
+그래도 확인할 것:
+- 같은 색 + 같은 색 → 자기 자신? >>> ㅇㅇ 그런데 제작 안 되게 막아. 그냥 둘까 지 실수니까 머리 좀 치게 할까. 
+- A+B와 B+A → 같은 결과? >>> 같은 결과
+- 결과 Dye가 A와 동일하면 정상?   >>> 둘 다 같은 색 염료여야 dye 결과가 a랑 같을 수 있는 거 아니야? 다른 경우의 수 있어?
+- 결과를 얻을 때 재료 각각 1개씩 소비? >>> 1개씩 소비 맞음
+- 동일 Dye를 두 칸에 넣으면 2개 소비? >>>같은 색의 염료 넣어 봤자 같은 색 염료만 나오니까 이렇게 아이템 버리게 되는 부분은 방지해 주자.. 그냥 둘까 지 실수니까 머리 좀 치게 할까. 게임 접으려나? 그러면 방지하고.
+
+🟠 11. 염료 배합 GUI 닫기
+현재 확정:
+결과 받기 → 결과 Dye 획득 → 배합 GUI 즉시 닫힘.
+
+그런데 다음도 필요함.
+- X 버튼으로 닫기 가능? ---->>> 배합 ui 바깥 부분 누르면 꺼지게 할까. X가 확실하려나? X로 해 
+- 닫으면 넣어둔 Dye는 반환? ------->> 그대로 반환
+- GUI 닫았다 다시 열면 이전 배합 상태가 유지? ---------->> 노 리셋 창 비워둬야 바로 새로운 배합 시도하지
+- 두 슬롯에 Dye 넣은 상태에서 테이블을 닫으면? ------------> 그대로 반환. 최종 배합 결과물 클릭하지 않은 이상 반환.
+
+내 추천은:
+X/취소 → 두 Dye 모두 반환 → 배합 GUI 종료
+
+🟠 12. 쪼물 테이블을 다른 사람이 사용하는 문제
+개인 영역이니까 반드시:
+다른 플레이어는 쪼물 테이블 GUI를 열 수 없음.
+
+그리고 플레이어 A가 쪼물 테이블을 사용하는 중에 B가 클릭해도:
+- GUI 열림 X
+- 아이템 조작 X
+- A의 슬라임에 접근 X
+여야 함.
+---> 맞음
+
+
+🟠 13. 3D 슬라임 조작
+이건 영상까지 있으니까 테스트 항목을 구체화해야 함.
+- 왼쪽 드래그 → 해당 지점 중심으로 늘어남
+- 오른쪽 드래그 → 회전
+- 마우스를 놓으면 자연스럽게 돌아옴
+- 너무 심하게 늘어났을 때 폭발/삭제되지 않음
+- 카메라 회전과 슬라임 회전이 충돌하지 않음
+- Topping을 올린 뒤 슬라임을 늘려도 Topping이 이상한 위치로 튀지 않음
+특히 마지막이 중요함.
+Topping이 슬라임 표면에 붙어 있다면 슬라임 변형을 어떻게 따라갈지 정해야 함.
+----> 클릭한 지점으로부터 일정 거리 안에 있으면 움직임도 함께 해야 함. 클릭한 지점이 가장 변동이 심하고 바깥으로 퍼질수록 강도 약해짐. 토핑이 클릭한 지점에 근접하면 함께 크게 움직이고 바깥쪽에 있으면 살짝 움직이는 정도.
+
+
+🟠 14. Topping 회수 시 위치 데이터
+현재 선택 슬롯에서 Topping을 클릭해 회수하면:
+그 Topping 하나만 인벤토리로 반환.
+
+그리고 그 Topping의 위치 데이터도 같이 폐기.
+단 Base 회수라면:
+전체 임시 조합을 반환하고 초기화.
+---->> 맞음
+
+
+
+🟠 15. 완성 슬라임 이름
+이것도 놓치기 쉬움.
+인벤토리에 그냥:
+슬라임
+
+이라고 여러 개 들어가면 구별하기 힘듦.
+예를 들어 자동으로:
+핑크 슬라임
+복숭아 글로시 슬라임
+구슬 토핑 슬라임
+
+처럼 이름을 만들 것인지,
+아니면 나중에 플레이어가 이름을 정하게 할 것인지.
+지금 이름 시스템이 필요 없다면 일단 완성 슬라임 + 미리보기 이미지 정도로 해도 됨.
+----------->> 플레이어가 저장할 때 이름 넣을 수 있게 해 줘. 
+
+
+🟠 16. 완성 슬라임 미리보기
+인벤토리에 완성 슬라임이 들어가면:
+실제 조합 모습이 아이콘에 보이는가?
+
+이것도 나중에 중요해.
+지금 당장 아이콘 생성 시스템까지 만들 필요는 없지만, 완성 슬라임 데이터에서 미리보기를 생성할 수 있도록 구조를 열어두는 것을 추천.
+---------->> ㅇㅇ 보이게 해 줘 
+
+
+
+🟡 17. 패드에 배치할 때 미리보기
+패드 위에 놓기 전에:
+배치할 위치
+를 보여주는 미리보기 시스템이 필요한지.
+예:
+투명한 슬라임 → 클릭 → 확정
+
+이건 나중에 추가해도 됨.
+
+-----------> 오우 좋은데 진행해
+
+
+🟡 18. 패드에서 판매/수익과 연결
+이건 현재 게임의 핵심 루프와 연결됨.
+완성 슬라임을 패드에 올렸다면:
+기존 패드 시스템에서 이것을 어떻게 취급하는가?
+
+- 단순 전시?
+- Gold 생성?
+- 판매?
+- 특정 시간이 지나면 수익?
+- Topping/Base에 따라 가치 변화?
+이건 아직 네가 확정하지 않은 부분이면 Codex가 절대 임의 구현하면 안 됨.
+-------------> 밟고 다닐 때 수익 발생. Topping/Base에 따라 가치 변화도 넣어 줘. 아이템들 등급 나눌 거니까 (일반,에픽,레전더리,신화 어쩌고)
+
+
+🟡 19. 환생 후 인벤토리
+기존 확정사항:
+모든 아이템 유지.
+
+따라서:
+- 완성 슬라임
+- Dye
+- Fragrance
+- Glossy
+- Topping
+- Base
+- Dirty Topping
+모두 환생으로 사라지지 않는지 확인.
+-----> OK
+
+
+
+🟡 20. 데이터 중복/복제 방지
+Roblox에서는 특히 중요함.
+예:
+완성 슬라임 A
+를 패드에 배치한 후:
+- 인벤토리에도 남아 있고
+- 패드에도 있고
+- 재접속 후 또 생기고
+이런 식으로 복제되면 안 됨.
+“아이템 소유권이 어디에 있는지”를 하나의 상태로 관리해야 함.
+--------------> Ok
+
+
+
+① Topping 개수
+한 슬라임에 몇 개까지? 
+>>>>>>>3개랑 5개 중 뭐가 좋겠냐
+② 카테고리 중복
+Dye / Fragrance / Glossy는 각각 1개 제한? 
+>>>> ㅇㅇ 1개씩만
+③ 재료 소비 시점
+내 추천은:
+저장할 때 소비 
+>>> 좋은 생각
+④ 완성 슬라임 패드 배치/회수
+배치하면 인벤토리에서 빠지고, 회수하면 다시 인벤토리로 돌아오는 방식?
+>>>>>> 맞음
+⑤ 패드 위 완성 슬라임의 역할
+전시만 하는지 / Gold를 발생시키는지 / 판매하는지
+>>>>>>> 노동자나 플레이어가 밟고 다닐 때 수익 발생. 판매 안 함.
+
+직접 패드에 놓고 꾸민 슬라임도 저장 버튼으로 완성 슬라임화할 것인가 >> 이게 고민임. 완성 슬라임화 되면 쪼물 테이블의 의미가 무엇인가.  
+ㄴ그리고 별도로 쪼물 테이블에서 향료 넣은 슬라임은 배치하는 순간부터 타이머 효과 작동하게 해야 함 (수익 x1.5 , 속도 x1.5 이런 효과 부여할 거임)
+완성 슬라임의 수익 계산 공식
+ㄴ베이스 등급별로 재질별로 가격 다르게 해 놓고 이건 고정
+ㄴ토핑 등급별로 뭐 가장 낮은 토핑은 +0.1gold 이런 식으로 붙이자. 다음 등급은 +0.2gold 이런 식으로.. 얼마씩 추가로 줄 건지는 리스트 따로 작성해야 함. 정리하기 쉽게 파일 만들어 놔야 함.
+아이템 등급별 가치
+ㄴ이건 기능 구현 후에 리스트 작성 후 입력할 수 있게 가능? 
+ㄴ
+🌟 로블록스 아이템 등급 순서 (낮음 → 높음)
+• 일반 (Common): 가장 흔하게 얻을 수 있는 기초 등급입니다.
+• 희귀 / 레어 (Rare): 일반보다는 조금 더 얻기 힘든 등급입니다.
+• 에픽 (Epic): 꽤 강력하거나 희소성이 있는 중간 이상 등급입니다.
+• 전설 / 레전더리 (Legendary): 누구나 갖고 싶어 하는 상위권 등급입니다.
+• 신화 / 미지컬 (Mythical): 최고 존엄 수준의 극악의 확률을 뚫어야 하는 최상위 등급입니다.
+
+쓰레기통에서 일반 아이템을 버릴 때 최종 확인창을 넣을지 -> 넣어야 함.
+- 개인 영역에 실제 원통형 쓰레기통 블록을 하나 둠.
+플레이어가 인벤토리의 아이템을 드래그해서 쓰레기통 영역에 가져가면:
+이 아이템을 버리시겠습니까?
+
+확인 → 삭제
+취소 → 그대로 복귀
+
+완성 슬라임 인벤토리에서 이름/미리보기 표시 방식 -->>인벤토리에는 미리보기 아이콘만 보이고 마우스 올리면 이름 팝업처럼 보이게.
+패드에서 밟았을 때 수익 발생의 정확한 쿨다운/발생량 -->>이것도 앞으로 만들 아이템 갯수가 어떻게 되는지에 따라 등급별로 나누어서 정해야 함..
+이 부분에 대해서 먼저 정하고 진행해야 하나?
+
+- 노동자 레벨 올릴 수 있는 버튼 있거든 이거 누르면 쿨다운 점점 짧아져서 수익 올라가는 걸로 할까
+
+-최종 수익 계산 구조
+① Base 기본 수익
+BaseGold
+-
+② Topping 추가 수익
+Topping1 + Topping2 + ... + ToppingN
+×
+③ 향료 효과
+FragranceMultiplier
+=
+최종 수익
+
+이걸로 가자. 염료랑 글로시는 보기 예쁘라고 넣는 시각적 효과가 끝.
+
+-향료 지속 시간은 어느 정도여야 플레이어가 게임 안 나가고 기다릴만 할까. 플레이어가 접속 안 했을 때에도 접속시보다는 느리지만 지속적으로 골드 벌 수 있는 시스템 넣어야 함. 그때도 향료 효과 넣어야 하나? 복잡하면 그냥 넣지 말고 나가면 향료 효과 못 받으니까 플레이어가 접속하고 있어야만 하게 이끌자.
+
+지금까지 나온 거 프롬포트 넘겨서 기능 구현하지 말고 아이템 전체 목록을 만들면서 Base/Topping/Fragrance/Glossy의 등급·가격·효과·수익값을 데이터 표로 설계 먼저 해?
+
+
+20261006-2차 추가 및 변경되는 부분 (좋은 아이디어) \
+&#x20;\
+오프라인 수익에 상한을 두자. \
+예: \
+최대 8시간까지 오프라인 수익 누적 \
+&#x20;\
+그러면: \
+게임 종료 \
+↓ \
+8시간 동안 60% 속도로 계산 \
+↓ \
+다시 접속 \
+↓ \
+Gold 수령 \
+&#x20;\
+이렇게. \
+그러면 잠자거나 학교/일 때문에 게임을 못 하는 동안에도 보상이 쌓이지만, 며칠 동안 게임을 안 들어왔다고 엄청난 재산이 쌓이는 문제는 막을 수 있음. \
+그리고 나중에 환생이나 업그레이드로: \
+Offline Capacity +2h \
+&#x20;\
+같은 걸 넣어서 \
+8h → 10h → 12h → 16h \
+으로 성장시키는 것도 가능. \
+&#x20;\
+&#x20;ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+★★★ 기존 가챠 시스템을 가챠 캡슐에서 왁뿌로 변경 \
+&#x20;이건 네가 생각한 것보다 **게임 콘텐츠로 활용 가치가 높아.**
+
+실제로 왁뿌볼은 지금 한국에서 별도의 촉감/ASMR 장난감 카테고리로 소비되고 있고, 핵심은 **한 번 깨지는 왁스 외피 + 안쪽의 말랑한 내용물**이라는 2단계 경험이야. 최근 한국에서도 관련 콘텐츠가 크게 퍼지고 있는 게 확인된다. [SBS 뉴스](https://news.sbs.co.kr/news/endPage.do?cooper=GSTAND\&news_id=N1008700446\&plink=RSSLINK\&utm_source=chatgpt.com)
+
+그리고 실제 판매 제품도 왁스 코팅 말랑이/왁뿌가 여러 색과 향으로 판매되고 있다. [쿠팡](https://www.coupang.com/vp/products/9669247819?utm_source=chatgpt.com)
+
+그러니까 **슬라임 게임에서 왁뿌를 빼버릴 이유가 없음.**
+
+다만 네가 말한 것처럼
+
+> 왁뿌 → 베이스 재료
+
+로 만들어버리면 시스템이 복잡해져.
+
+### 나는 이렇게 할 것을 추천함.
+
+**왁뿌 = 별도 미니게임/소비형 콘텐츠**
+
+---
+
+## 왁뿌 시스템
+
+플레이어가:
+
+**왁뿌 구매**
+
+↓
+
+개인 영역에 배치
+
+↓
+
+**뿌시기**
+
+↓
+
+`CRACK!`
+
+↓
+
+왁스 외피 파괴
+
+↓
+
+안에서 **슬라임/재료/토핑/보상** 등장
+
+↓
+
+획득
+
+↓
+
+다시 왁뿌 구매
+
+이렇게.
+
+즉 **Base를 늘리는 게 아니라 "보상 상자"로 사용**하는 거야.
+
+이러면 구현도 훨씬 간단해.
+
+---
+
+# 13. 더 좋은 방법은 "왁뿌 안에서 Base가 나오는 것"
+
+예:
+
+### 일반 왁뿌
+
+> 일반 Base\
+> 일반 Topping\
+> 소량 Gold
+
+### 레어 왁뿌
+
+> 레어 Base\
+> 레어 Topping\
+> 일반\~레어 재료
+
+### 에픽 왁뿌
+
+> 에픽 Base\
+> 에픽 Topping\
+> 희귀 재료
+
+### 시즌 왁뿌 🎄
+
+> 크리스마스 Topping\
+> 시즌 Glitter\
+> 시즌 Charm
+
+그러면 왁뿌가 **Gacha와 완전히 똑같아지는 것도 피하면서**, 게임의 또 다른 수집 루프가 생김.
+
+---
+
+# 14. 특히 왁뿌와 환생 시스템도 연결할 수 있음
+
+나중에:
+
+**환생 1회**
+
+→ 왁뿌 전용 구역 해금
+
+**환생 3회**
+
+→ Rare Wakppu
+
+**환생 5회**
+
+→ Seasonal Wakppu
+
+**환생 10회**
+
+→ Mythical Wakppu
+
+이런 식으로.
+
+그러면 네 게임의 전체 루프가:
+
+> **슬라임 제작 → Gold → 패드 확장 → 환생 → 새로운 왁뿌/가챠/아이템 → 더 좋은 슬라임 제작**
+
+으로 연결돼.
+
+
+
+## 🎯 캡슐 대신 "왁뿌 뽑기"
+
+일반적인 게임:
+
+> Gold 사용 → 캡슐 → 아이템 획득
+
+우리 게임:
+
+> Gold 사용 → **왁뿌 획득 → 직접 뿌숨 → 보상 획득**
+
+이게 훨씬 기억에 남아.
+
+그리고 \*\*"뽑는다"가 아니라 "부순다"\*\*는 행위 자체가 ASMR 게임하고 너무 잘 맞아.
+
+---
+
+# 핵심 루프
+
+### 🟡 1. 왁뿌 가챠 기계
+
+개인 영역이나 별도의 가챠 구역에 설치.
+
+> **WAKPPU MACHINE**
+
+Gold를 넣으면:
+
+**띵!**
+
+왁뿌 하나가 나옴.
+
+↓
+
+### 🟠 2. 왁뿌를 플레이어가 가져감
+
+왁뿌가 손에 들리거나 테이블 위에 배치됨.
+
+그리고:
+
+> **[뿌시기]**
+
+↓
+
+### 🔴 3. 직접 뿌숨
+
+**푹—**
+
+**빠직!**
+
+**톡!**
+
+왁스가 깨지면서 안에 있는 내용물이 드러남.
+
+이게 게임의 **ASMR 핵심 순간**이 되는 거지.
+
+↓
+
+### 🟢 4. 보상 획득
+
+예:
+
+> 🍓 Strawberry Dye\
+> ✨ Fine Glitter Pink\
+> 🍑 Peach Fragrance\
+> 🟣 Bingsu Bead M\
+> ☁️ Cloud Base
+
+중 하나가 나옴.
+
+---
+
+# 그리고 여기서 더 재미있는 게 가능함
+
+왁뿌 **겉모습 자체가 어떤 가챠인지 알려주는 단서**가 될 수 있어.
+
+예를 들어:
+
+### 일반 왁뿌
+
+왁스:
+
+> 흰색 / 파스텔
+
+보상:
+
+> 일반 아이템 중심
+
+### 레어 왁뿌
+
+왁스:
+
+> 파스텔 + 반짝이
+
+보상:
+
+> 레어 이상
+
+### 에픽 왁뿌
+
+왁스:
+
+> 강한 색상 + 글리터
+
+보상:
+
+> 에픽 이상
+
+### 레전더리 왁뿌
+
+왁스:
+
+> 홀로그램 / 오로라
+
+보상:
+
+> 레전더리 이상
+
+### 미시컬 왁뿌
+
+왁스:
+
+> 특수 애니메이션 / 무지개 / 빛나는 균열
+
+보상:
+
+> 미시컬
+
+---
+
+# 그런데 나는 한 단계 더 추천함
+
+**왁뿌 외형만 보고 등급을 100% 확정하지 않는 것.**
+
+예를 들어:
+
+> "어? 이 왁뿌 금색인데?"
+
+하면서 뿌쉈는데
+
+**Rare**
+
+일 수도 있고,
+
+금색 균열이 나오면서
+
+**LEGENDARY**
+
+가 뜰 수도 있게.
+
+즉 **뿌수기 직전의 기대감**을 만드는 거야.
+
+---
+
+# 그리고 "뿌수는 방법"도 가챠 연출이 될 수 있음
+
+이게 진짜 재밌을 것 같아.
+
+왁뿌를 그냥 클릭 한 번 해서 없애는 게 아니라:
+
+### ① 누르기
+
+손가락으로 꾹—
+
+### ② 흔들기
+
+찰랑찰랑
+
+### ③ 압박
+
+꾸욱—
+
+### ④ 파괴
+
+**빠직!**
+
+그리고 내부 아이템 등장.
+
+ASMR 게임이니까 이 과정 자체가 콘텐츠가 됨.
+
+---
+
+# 🎁 왁뿌 종류도 다양하게 만들 수 있음
+
+### Basic Wax Ball
+
+일반 가챠
+
+### Glitter Wax Ball
+
+Glitter 계열 확률 증가
+
+### Topping Wax Ball
+
+Topping 획득 확률 증가
+
+### Fragrance Wax Ball
+
+Fragrance 획득 확률 증가
+
+### Base Wax Ball
+
+Base 획득 확률 증가
+
+### Mystery Wax Ball
+
+뭐가 나올지 완전히 랜덤
+
+### Seasonal Wax Ball
+
+🎃 Halloween\
+🎄 Christmas\
+💕 Valentine's\
+🌸 Spring
+
+---
+
+# 그리고 이게 기존 Gacha 시스템하고도 완벽하게 연결됨
+
+가챠를 없애는 게 아니라 **가챠의 외형을 왁뿌로 바꾸는 것**임.
+
+즉 시스템적으로는:
+```
+Gacha
+ ├─ Basic
+ ├─ Rare
+ ├─ Epic
+ ├─ Legendary
+ └─ Mythical
+```
+
+인데 플레이어가 보는 건:
+```
+🟡 왁뿌
+🟣 왁뿌
+🔵 왁뿌
+🌈 왁뿌
+✨ 특수 왁뿌
+```
+
+이렇게.
+
+---
+
+# 🔥 그리고 "왁뿌 수집" 자체도 콘텐츠가 됨
+
+이게 진짜 좋은 부분.
+
+아이템 도감에:
+
+### WAKPPU COLLECTION
+
+**Normal**
+
+□ White Wax\
+□ Pink Wax\
+□ Blue Wax
+
+**Rare**
+
+□ Glitter Wax\
+□ Marble Wax\
+□ Pastel Wax
+
+**Epic**
+
+□ Galaxy Wax\
+□ Holographic Wax
+
+**Legendary**
+
+□ Aurora Wax
+
+**Mythical**
+
+□ ???
+
+이런 식으로.
+
+그러면 플레이어는 **안에 뭐가 들었는지만 수집하는 게 아니라 왁뿌 외형 자체도 수집**하게 됨.
+
+---
+
+# 🎄 시즌 콘텐츠도 엄청 쉬워짐
+
+예를 들어 크리스마스 시즌.
+
+일반 가챠를 바꾸는 게 아니라:
+
+## 🎄 CHRISTMAS WAKPPU
+
+왁뿌 외형:
+
+🎅 산타\
+⛄ 눈사람\
+🎄 트리\
+🎁 선물\
+❄️ 눈송이
+
+그리고 안에서:
+
+- Christmas Topping
+- Christmas Glitter
+- Christmas Dye
+- Christmas Fragrance
+- Christmas Charm
+
+등이 나옴.
+
+이렇게 하면 **시즌마다 새로운 가챠 UI를 만들 필요도 거의 없음.**
+
+---
+
+# 그리고 왁뿌를 "일회성"이라는 단점까지 장점으로 바꿀 수 있음
+
+네가 처음 말한 게:
+
+> 현실의 왁뿌는 한 번 뿌시면 끝.
+
+이거잖아.
+
+그게 오히려 **가챠에 완벽함.**
+
+### 캡슐
+
+> 열고 버림
+
+### 왁뿌
+
+> **뿌수는 순간 자체가 보상 경험**
+
+그리고 현실에서 한 번만 가능한 행위를 게임에서는:
+
+> Gold → 왁뿌 → 뿌숨 → 보상 → 새로운 왁뿌
+
+로 반복할 수 있음.
+
+---
+
+## 그래서 나는 가챠 이름도 그냥 Gacha라고 안 하고
+
+### **WAKPPU MACHINE**
+
+혹은
+
+### **WAKPPU GACHA**
+
+정도로 가는 걸 추천.
+
+플레이어 입장에서는:
+
+> "가챠 돌리자"
+
+가 아니라
+
+> **"왁뿌 하나 까자."**
+
+가 되는 거지.
+
+이게 게임의 고유한 언어가 됨.
+
+---
+
+그리고 **이 아이디어 때문에 왁뿌를 Base/Topping 같은 기존 재료 카테고리에 넣지 않는 게 더 확실해졌어.**
+
+데이터 구조도:
+```
+Base
+Topping
+Dye
+Fragrance
+Glossy
+Glitter
+    ↓
+Slime 제작 재료
+
+Wakppu
+    ↓
+Gacha / Reward 콘텐츠
+```
+
+로 완전히 분리.\
+&#x20;\
+그리고 왁뿌 가챠는 이제 거의 확정해도 됨 \
+네가 기존에 생각한 \
+가챠 등급별 해금 \
+&#x20;\
+이랑 정확히 맞춰. \
+Gacha Area \
+처음 \
+🟡 Basic Wax \
+일반 이상 \
+&#x20;\
+↓ \
+해금 \
+🔵 Rare Wax \
+레어 이상 \
+&#x20;\
+↓ \
+🟣 Epic Wax \
+에픽 이상 \
+&#x20;\
+↓ \
+🟠 Legendary Wax \
+레전더리 이상 \
+&#x20;\
+↓ \
+🌈 Mythical Wax \
+미시컬 \
+&#x20;\
+여기서 중요한 규칙 하나 \
+"Rare Wax에서 무조건 Rare가 나온다"는 의미는 아니게 하자. \
+예를 들어: \
+Rare Wax \
+가능: \
+\- Rare 70% \
+\- Epic 25% \
+\- Legendary 4% \
+\- Mythical 1% \
+이런 식. \
+즉: \
+왁뿌 등급 = 최소 보상 등급 \
+&#x20;\
+이고, \
+그 위 등급이 나올 확률이 존재. \
+그러면 플레이어가: \
+"레어 왁뿌인데 혹시 레전더리 뜨는 거 아냐?" \
+&#x20;\
+하면서 뿌수는 순간의 기대감이 생김. \
+그리고 Mythical은 조금 다르게 \
+Mythical Wax에서는: \
+Mythical 확정 \
+&#x20;\
+으로 가도 됨. \
+왜냐하면 최종 등급을 해금한 플레이어에게 주는 최종 가챠 콘텐츠니까. \
+대신 Mythical 안에서: \
+Mythical Base \
+Mythical Topping \
+Mythical Glitter \
+Mythical Seasonal \
+&#x20;\
+등으로 보상 풀이 다양해지는 것.
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+
+★ [아이템 목록에 대해서]
+
+응. **현실 인기도는 게임 데이터에 직접 넣는 스탯은 아니지만, 등급 결정에는 분명히 영향을 주는 게 맞아.**
+
+예를 들면:
+
+> 현실에서 흔하고 대중적 → General 쪽\
+> 많이 쓰이지만 특별한 촉감/비주얼이 있음 → Rare\
+> 슬라임 마니아층에서 인기 있고 촉감이 강함 → Epic\
+> 제작 난이도·희소성·비주얼·ASMR 가치가 높음 → Legendary\
+> 매우 독특하거나 프리미엄/테마성이 강함 → Mythical
+
+특히 **Topping은 현실 인기도보다 `촉감 기여도 + ASMR + 시각적 임팩트 + 희소성`을 더 강하게 반영**하는 게 좋아. 실제 슬라임 시장에서도 Bingsu, Fishbowl, Foam, Floam, Crunch 계열이 촉감용 핵심 재료로 반복해서 등장하고 있고, 실제 판매 제품에서도 이런 조합이 사용된다. [Slime Junkies](https://slimejunkies.com/pages/our-texture-database?utm_source=chatgpt.com)
+
+그래서 지금까지 정한 시스템을 기준으로 **게임에 바로 넣을 수 있는 1차 최종 데이터표** 형태로 정리하면 이렇게 가는 걸 추천해.
+
+---
+
+# 1. BASE
+
+현실 슬라임에서 실제로 널리 쓰이는 텍스처들을 중심으로 잡았다. Clear, Butter, Cloud, Floam, Bingsu, Jelly, Glossy 등은 실제 슬라임 판매/자료에서 확인되는 대표적인 텍스처다. [Cloud 9 Slime](https://cloud9slimeict.com/blogs/the-slime-lab/5-types-of-slime-explained?utm_source=chatgpt.com)
+
+| ID   | Base         | Rarity    | BaseGold | 핵심 촉감/연출     |
+| ---- | ------------ | --------- | -------- | ------------ |
+| B001 | White Glossy | General   | 10       | 기본 쫀득, 버블팝   |
+| B002 | Clear        | General   | 12       | 투명, 강한 팝     |
+| B003 | Jelly        | General   | 14       | 탱글, 젤리감      |
+| B004 | Fluffy       | General   | 15       | 폭신, 부드러움     |
+| B005 | Thick Glossy | Rare      | 20       | 묵직한 스트레치     |
+| B006 | Cloud        | Rare      | 23       | 보송, 드리즐      |
+| B007 | Butter       | Rare      | 25       | 부드럽고 매트한 질감  |
+| B008 | Snow Fizz    | Rare      | 28       | 사르륵, 바삭      |
+| B009 | Floam        | Rare      | 30       | 폼비즈 크런치      |
+| B010 | Sherbet      | Rare      | 32       | 가볍고 사각한 촉감   |
+| B011 | Icee         | Epic      | 38       | 차갑고 가벼운 드리즐  |
+| B012 | Bingsu       | Epic      | 45       | 강한 크런치       |
+| B013 | Fishbowl     | Epic      | 48       | 단단한 비즈 크런치   |
+| B014 | Jelly Cube   | Epic      | 50       | 큐브+젤리 촉감     |
+| B015 | Mochi        | Epic      | 52       | 탄력, 쫀득       |
+| B016 | Crunch Bomb  | Legendary | 65       | 대량 파츠 크런치    |
+| B017 | Cloud Creme  | Legendary | 70       | 크리미+폭신       |
+| B018 | Snow Butter  | Legendary | 75       | 눈처럼 부드러운 버터  |
+| B019 | Nougat       | Legendary | 80       | 묵직하고 늘어나는 질감 |
+| B020 | Crystal      | Mythical  | 100      | 투명+크리스털 ASMR |
+| B021 | Aurora       | Mythical  | 110      | 특수 광택+색변화    |
+
+**중요:** Glossy를 별도 시스템으로도 두기 때문에 `White Glossy / Thick Glossy` 같은 Base와 나중의 `Glossy Effect`는 역할이 다르다.
+
+---
+
+# 2. TOPPING
+
+여기가 게임의 핵심이다.
+
+우리가 정한 대로:
+
+**Type = Decoration / Texture / Hybrid**\
+**Size = S / M / L**\
+**슬라임 하나당 최대 5개**
+
+그리고 **Texture가 Decoration보다 기본적으로 높은 가치**를 가진다.
+
+실제 슬라임 재료에서도 Bingsu beads, Fishbowl beads, Foam beads, Charms, Fimos, Sprinkles, Foam chunks 등이 반복적으로 판매되고 있다. [Dope Slimes LLC](https://dopeslimes.com/pages/suppliescollection?utm_source=chatgpt.com)
+
+### A. Decoration
+
+| ID   | Topping            | Type       | 기본 Rarity | S Gold | M Gold | L Gold |
+| ---- | ------------------ | ---------- | --------- | ------ | ------ | ------ |
+| T001 | Mini Sprinkles     | Decoration | General   | +1     | +2     | +3     |
+| T002 | Heart Confetti     | Decoration | General   | +1     | +2     | +3     |
+| T003 | Star Confetti      | Decoration | General   | +1     | +2     | +3     |
+| T004 | Flower Confetti    | Decoration | General   | +1     | +2     | +3     |
+| T005 | Circle Confetti    | Decoration | General   | +1     | +2     | +3     |
+| T006 | Rainbow Sprinkles  | Decoration | General   | +1     | +2     | +3     |
+| T007 | Fimo Fruit         | Decoration | Rare      | +2     | +3     | +5     |
+| T008 | Fimo Flower        | Decoration | Rare      | +2     | +3     | +5     |
+| T009 | Sequins            | Decoration | Rare      | +2     | +4     | +6     |
+| T010 | Star Sequins       | Decoration | Rare      | +2     | +4     | +6     |
+| T011 | Heart Sequins      | Decoration | Rare      | +2     | +4     | +6     |
+| T012 | Shell Sequins      | Decoration | Rare      | +2     | +4     | +6     |
+| T013 | Mini Gem           | Decoration | Rare      | +3     | +5     | +7     |
+| T014 | Pearl Beads        | Decoration | Rare      | +3     | +5     | +7     |
+| T015 | Alphabet Beads     | Decoration | Rare      | +3     | +5     | +8     |
+| T016 | Mini Charms        | Decoration | Epic      | +5     | +8     | +12    |
+| T017 | Animal Charms      | Decoration | Epic      | +5     | +8     | +12    |
+| T018 | Food Charms        | Decoration | Epic      | +5     | +9     | +13    |
+| T019 | Kawaii Charms      | Decoration | Epic      | +6     | +10    | +15    |
+| T020 | Premium Gem Charms | Decoration | Legendary | +8     | +13    | +18    |
+
+---
+
+### B. Texture
+
+여기는 **현실에서도 촉감/소리 때문에 존재 가치가 높은 재료**들을 위쪽 등급으로 올린다.
+
+| ID   | Topping                 | Type    | 기본 Rarity | S   | M   | L   |
+| ---- | ----------------------- | ------- | --------- | --- | --- | --- |
+| T021 | Small Foam Beads        | Texture | General   | +2  | +3  | +4  |
+| T022 | Pastel Foam Beads       | Texture | Rare      | +3  | +5  | +7  |
+| T023 | Large Foam Beads        | Texture | Rare      | +4  | +6  | +9  |
+| T024 | Bingsu Beads            | Texture | Rare      | +4  | +7  | +10 |
+| T025 | Iridescent Bingsu Beads | Texture | Epic      | +6  | +9  | +13 |
+| T026 | Fishbowl Beads          | Texture | Epic      | +6  | +10 | +14 |
+| T027 | Glow Fishbowl Beads     | Texture | Legendary | +8  | +12 | +17 |
+| T028 | Block Beads             | Texture | Epic      | +7  | +11 | +16 |
+| T029 | Slushy Beads            | Texture | Epic      | +6  | +10 | +15 |
+| T030 | Water Beads             | Texture | Epic      | +7  | +11 | +16 |
+| T031 | Foam Chunks             | Texture | Epic      | +7  | +11 | +17 |
+| T032 | Sugar Beads             | Texture | Epic      | +8  | +12 | +18 |
+| T033 | Perlite                 | Texture | Legendary | +9  | +14 | +20 |
+| T034 | Silica Beads            | Texture | Legendary | +10 | +15 | +22 |
+| T035 | Crunch Pebbles          | Texture | Legendary | +11 | +17 | +24 |
+| T036 | Crystal Beads           | Texture | Mythical  | +15 | +22 | +30 |
+
+실제로 커뮤니티에서도 Bingsu, Perlite, Floam, Block Beads, Sequins 등의 크런치 재료가 강한 선호를 보이는 사례가 확인된다. [Reddit](https://www.reddit.com/r/Slime/comments/1sqiiub/qotd_which_addins_do_you_love_most_in_slime/?utm_source=chatgpt.com)
+
+---
+
+### C. Hybrid
+
+**눈에 보이는 장식 + 만졌을 때의 촉감**을 동시에 주는 것.
+
+| ID   | Topping            | Type   | Rarity    | S   | M   | L   |
+| ---- | ------------------ | ------ | --------- | --- | --- | --- |
+| T037 | Sprinkle Mix       | Hybrid | Rare      | +3  | +5  | +7  |
+| T038 | Confetti Bead Mix  | Hybrid | Rare      | +3  | +5  | +8  |
+| T039 | Candy Beads        | Hybrid | Rare      | +4  | +6  | +9  |
+| T040 | Boba Beads         | Hybrid | Epic      | +6  | +9  | +13 |
+| T041 | Jelly Cubes        | Hybrid | Epic      | +7  | +10 | +15 |
+| T042 | Mini Marshmallow   | Hybrid | Epic      | +7  | +11 | +16 |
+| T043 | Fruit Jelly Pieces | Hybrid | Epic      | +7  | +11 | +16 |
+| T044 | Candy Crunch Mix   | Hybrid | Legendary | +9  | +14 | +20 |
+| T045 | Crystal Shard Mix  | Hybrid | Legendary | +10 | +15 | +22 |
+| T046 | Aurora Crystal Mix | Hybrid | Mythical  | +14 | +20 | +28 |
+
+실제 상품에서도 boba beads, fruit-themed charms, jelly/candy 테마, bingsu 등을 섞어 시각과 촉감을 동시에 만드는 구성이 흔하다. [FlipHTML5](https://fliphtml5.com/adin/jsrq/Dope_Slimes_Catalog_2026/?utm_source=chatgpt.com)
+
+---
+
+# 3. SEASONAL TOPPING
+
+이건 **일반 Topping 테이블과 별도 풀**로 관리하는 게 좋다.
+
+| Season    | Topping            | Type       | Rarity    |
+| --------- | ------------------ | ---------- | --------- |
+| Valentine | Heart Charm        | Decoration | Rare      |
+| Valentine | Chocolate Heart    | Hybrid     | Epic      |
+| Valentine | Pink Heart Sequins | Decoration | Rare      |
+| Spring    | Cherry Blossom     | Decoration | Rare      |
+| Spring    | Butterfly          | Decoration | Rare      |
+| Spring    | Flower Beads       | Hybrid     | Epic      |
+| Summer    | Seashell           | Decoration | Rare      |
+| Summer    | Starfish           | Decoration | Rare      |
+| Summer    | Ocean Beads        | Texture    | Epic      |
+| Halloween | Pumpkin            | Decoration | Rare      |
+| Halloween | Ghost              | Decoration | Epic      |
+| Halloween | Bat                | Decoration | Epic      |
+| Halloween | Eyeball            | Hybrid     | Epic      |
+| Halloween | Black Spider       | Hybrid     | Legendary |
+| Christmas | Snowflake          | Decoration | Rare      |
+| Christmas | Santa              | Decoration | Epic      |
+| Christmas | Snowman            | Decoration | Epic      |
+| Christmas | Christmas Tree     | Decoration | Epic      |
+| Christmas | Candy Cane         | Hybrid     | Rare      |
+| Christmas | Snow Crystal       | Texture    | Legendary |
+
+실제로 슬라임 믹스인에서도 계절별 confetti/holiday shapes가 오래전부터 사용되고 있고, 현재 상품들도 테마별 charm을 적극적으로 활용한다. [Ultimate Slime Guide](https://ultimateslimeguide.com/wp-content/uploads/2018/10/New-Ultimate-Slime-Guide.pdf?utm_source=chatgpt.com)
+
+---
+
+# 4. DYE
+
+Dye는 **Gold = 0**.
+
+그리고 네가 원했던 것처럼 모든 색을 별도 아이템으로 만드는 게 아니라 **색상 조합 시스템**으로 가는 게 맞다.
+
+### 기본 Dye
+
+| ID   | Dye    | Color  | Rarity  |
+| ---- | ------ | ------ | ------- |
+| D001 | Red    | Red    | General |
+| D002 | Orange | Orange | General |
+| D003 | Yellow | Yellow | General |
+| D004 | Green  | Green  | General |
+| D005 | Blue   | Blue   | General |
+| D006 | Cyan   | Cyan   | General |
+| D007 | Purple | Purple | General |
+| D008 | Pink   | Pink   | General |
+| D009 | White  | White  | General |
+| D010 | Black  | Black  | General |
+
+### 혼합 결과
+
+| 결과          | 조합                    |
+| ----------- | --------------------- |
+| Pastel Pink | Pink + White          |
+| Baby Blue   | Blue + White          |
+| Lavender    | Purple + White        |
+| Mint        | Green + Cyan + White  |
+| Peach       | Orange + Pink + White |
+| Cream       | Yellow + White        |
+| Lilac       | Purple + Pink + White |
+| Sky Blue    | Blue + Cyan + White   |
+| Coral       | Red + Orange + White  |
+| Lemon       | Yellow + White        |
+| Rose        | Red + Pink            |
+| Aqua        | Cyan + Blue           |
+| Navy        | Blue + Black          |
+| Wine        | Red + Purple + Black  |
+| Chocolate   | Red + Yellow + Black  |
+
+그리고 별도 특수 효과:
+
+**Neon / Metallic / Pearl / Aurora / Transparent Tint**
+
+이걸 Color와 분리한다.
+
+즉:
+
+> Pastel Pink + Aurora\
+> Baby Blue + Pearl\
+> Lavender + Metallic
+
+같은 조합이 가능해진다.
+
+---
+
+# 5. FRAGRANCE
+
+실제 슬라임용 향료 판매 목록에서도 과일, 디저트, 음료, 꽃, 허브 계열이 매우 다양하게 쓰인다. 실제 판매되는 슬라임 향료에서도 Peach, Strawberry, Blueberry, Grape, Mango, Vanilla, Cake, Cotton Candy, Lavender, Rose, Coffee, Mint 등이 확인된다. [Slimeatory](https://www.slimeatory.com/products/slimeatory-fragrance-oils?utm_source=chatgpt.com)
+
+게임에서는 너무 잘게 쪼개지 않고 **24종** 정도가 적당하다.
+
+| ID   | Fragrance    | Rarity    | Income Multiplier | Worker Speed | Duration |
+| ---- | ------------ | --------- | ----------------- | ------------ | -------- |
+| F001 | Strawberry   | General   | ×1.10             | ×1.10        | 30m      |
+| F002 | Blueberry    | General   | ×1.10             | ×1.10        | 30m      |
+| F003 | Grape        | General   | ×1.10             | ×1.10        | 30m      |
+| F004 | Apple        | General   | ×1.10             | ×1.10        | 30m      |
+| F005 | Lemon        | General   | ×1.10             | ×1.10        | 30m      |
+| F006 | Orange       | General   | ×1.10             | ×1.10        | 30m      |
+| F007 | Peach        | Rare      | ×1.20             | ×1.20        | 30m      |
+| F008 | Mango        | Rare      | ×1.20             | ×1.20        | 30m      |
+| F009 | Cherry       | Rare      | ×1.20             | ×1.20        | 30m      |
+| F010 | Watermelon   | Rare      | ×1.20             | ×1.20        | 30m      |
+| F011 | Pineapple    | Rare      | ×1.20             | ×1.20        | 30m      |
+| F012 | Coconut      | Rare      | ×1.20             | ×1.20        | 30m      |
+| F013 | Cotton Candy | Epic      | ×1.30             | ×1.30        | 30m      |
+| F014 | Bubble Gum   | Epic      | ×1.30             | ×1.30        | 30m      |
+| F015 | Vanilla      | Epic      | ×1.30             | ×1.30        | 30m      |
+| F016 | Cake         | Epic      | ×1.30             | ×1.30        | 30m      |
+| F017 | Chocolate    | Epic      | ×1.30             | ×1.30        | 30m      |
+| F018 | Sweet Cream  | Epic      | ×1.30             | ×1.30        | 30m      |
+| F019 | Coffee       | Legendary | ×1.40             | ×1.40        | 30m      |
+| F020 | Lavender     | Legendary | ×1.40             | ×1.40        | 30m      |
+| F021 | Rose         | Legendary | ×1.40             | ×1.40        | 30m      |
+| F022 | Jasmine      | Legendary | ×1.40             | ×1.40        | 30m      |
+| F023 | Aurora Berry | Mythical  | ×1.50             | ×1.50        | 30m      |
+| F024 | Dream Cream  | Mythical  | ×1.50             | ×1.50        | 30m      |
+
+그리고 우리가 정한 규칙대로:
+
+**향료 효과는 완성 슬라임을 Pad에 올리는 순간 시작.**\
+**온라인에서만 적용.**\
+**오프라인 수익에는 적용하지 않음.**
+
+---
+
+# 6. GLITTER
+
+Glitter는 **경제적 Gold = 0**.
+
+대신 `Type / Color / Pattern`을 분리한다.
+
+실제 슬라임용 글리터 시장에서도 Fine, Chunky, Holographic, Iridescent 등이 별도 제품군으로 존재하고, 투명/클라우드/버터/크런치 계열에 맞춰 다른 글리터를 사용한다. [PDA Glitter](https://pdyaglitter.com/slime-glitter/?utm_source=chatgpt.com)
+
+### Fine
+
+| Glitter       | Colors                                                               |
+| ------------- | -------------------------------------------------------------------- |
+| Fine          | White / Pink / Red / Orange / Yellow / Green / Blue / Purple / Black |
+| Fine Metallic | Gold / Silver                                                        |
+| Fine Pearl    | White / Pink / Blue / Lavender                                       |
+
+### Holographic
+
+| Glitter            | Colors                                 |
+| ------------------ | -------------------------------------- |
+| Holographic        | Pink / Blue / Purple / Green / Rainbow |
+| Holographic Silver | Silver                                 |
+| Holographic Gold   | Gold                                   |
+
+### Iridescent
+
+| Glitter    | Colors                                 |
+| ---------- | -------------------------------------- |
+| Iridescent | Pink / Blue / Purple / Green / Rainbow |
+
+### Aurora
+
+| Glitter | Colors                                 |
+| ------- | -------------------------------------- |
+| Aurora  | Pink / Blue / Purple / Green / Rainbow |
+
+### Glow
+
+| Glitter | Colors                                        |
+| ------- | --------------------------------------------- |
+| Glow    | White / Pink / Blue / Green / Yellow / Purple |
+
+### Chunky Shape
+
+| Pattern   |
+| --------- |
+| Star      |
+| Heart     |
+| Moon      |
+| Snowflake |
+| Flower    |
+| Butterfly |
+| Circle    |
+| Hexagon   |
+| Diamond   |
+
+### Galaxy
+
+Galaxy는 **하나의 Glitter 아이템이 아니라 패턴군**으로 만든다.
+
+| Galaxy Pattern |
+| -------------- |
+| Classic Galaxy |
+| Nebula         |
+| Aurora Galaxy  |
+| Rose Galaxy    |
+| Starfield      |
+| Deep Space     |
+
+실제 Galaxy slime에서도 deep purple/blue/black + holographic/iridescent + star/moon 형태의 조합이 사용된다. [Clean Stylish Homes](https://cleanstylishhomes.com/how-to-make-galaxy-slime/?utm_source=chatgpt.com)
+
+---
+
+# 7. GLOSSY
+
+Glossy도 **Gold = 0**.
+
+이건 Glitter와 달리 **빛 반사/표면 질감**을 담당한다.
+
+| ID   | Glossy            | Rarity    | Visual     |
+| ---- | ----------------- | --------- | ---------- |
+| G001 | Soft Glossy       | General   | 은은한 광택     |
+| G002 | Glossy            | General   | 기본 물광      |
+| G003 | Wet Glossy        | Rare      | 젖은 듯한 광택   |
+| G004 | Thick Glossy      | Rare      | 두껍고 강한 광택  |
+| G005 | High Gloss        | Epic      | 강한 표면 반사   |
+| G006 | Pearl Gloss       | Epic      | 진주광        |
+| G007 | Crystal Gloss     | Legendary | 유리 같은 반사   |
+| G008 | Holographic Gloss | Legendary | 무지개 반사     |
+| G009 | Aurora Gloss      | Mythical  | 각도에 따른 색변화 |
+| G010 | Prism Gloss       | Mythical  | 프리즘 광택     |
+
+여기서 **Glossy는 Base를 대체하지 않는다.**
+
+예를 들어:
+
+> Clear Base &#x20;
+>
+> - Baby Blue Dye &#x20;
+> - Aurora Glitter &#x20;
+> - Aurora Gloss &#x20;
+> - Peach Fragrance &#x20;
+> - Bingsu Beads
+
+이런 식으로 조합할 수 있다.
+
+---
+
+# 8. WAKPPU
+
+이건 이제 **Gacha 전용 콘텐츠**로 확실히 분리.
+
+그리고 네가 정한 핵심 규칙:
+
+> **Wakppu 등급 = 최소 보상 등급**
+
+즉 Rare Wakppu를 깠는데 무조건 Rare만 나오는 게 아니다.
+
+**Rare 이상**이 나온다.
+
+| ID   | Wakppu             | Rarity    | 최소 보상     | 권장 보상 테이블               |
+| ---- | ------------------ | --------- | --------- | ----------------------- |
+| W001 | Basic Wax Ball     | General   | General   | G 75 / R 20 / E 4 / L 1 |
+| W002 | Rare Wax Ball      | Rare      | Rare      | R 70 / E 25 / L 4 / M 1 |
+| W003 | Epic Wax Ball      | Epic      | Epic      | E 75 / L 20 / M 5       |
+| W004 | Legendary Wax Ball | Legendary | Legendary | L 80 / M 20             |
+| W005 | Mythical Wax Ball  | Mythical  | Mythical  | M 100                   |
+
+그리고 **Seasonal Wakppu**:
+
+| Wakppu        | Season    | 보상                                |
+| ------------- | --------- | --------------------------------- |
+| Valentine Wax | Valentine | Valentine Topping / Glitter / Dye |
+| Spring Wax    | Spring    | Spring Topping / Flower           |
+| Summer Wax    | Summer    | Ocean / Beach Topping             |
+| Halloween Wax | Halloween | Halloween Topping                 |
+| Christmas Wax | Christmas | Christmas Topping / Glitter       |
+| Aurora Wax    | Special   | Aurora 계열                         |
+| Galaxy Wax    | Special   | Galaxy 계열                         |
+
+특히 실제 한국 상품에서도 왁스가 깨지는 촉감 자체가 상품 경험으로 사용되고 있다. 국내 슬라임 상품에 **“왁스 부시기”**, \*\*“겉면 왁스가 와자작 깨지는 재미”\*\*를 전면에 내세운 제품들이 실제로 확인된다. [젤시스](https://jellsis.cafe24.com/category/%EC%A0%90%ED%86%A0%EC%84%9E%EA%B8%B0-%EC%8A%AC%EB%9D%BC%EC%9E%84/80/?utm_source=chatgpt.com)
+
+그래서 이건 게임에서 꽤 강력한 차별점이 된다.
+
+---
+
+# 최종 시스템 구조
+
+결국 아이템 데이터는 이렇게 깔끔하게 분리된다.
+```
+BASE
+└─ Rarity
+└─ BaseGold
+└─ Texture
+
+DYE
+└─ Color
+└─ Blend
+└─ SpecialEffect
+└─ Gold = 0
+
+TOPPING
+└─ Type
+   ├─ Decoration
+   ├─ Texture
+   └─ Hybrid
+└─ Size
+   ├─ S
+   ├─ M
+   └─ L
+└─ Rarity
+└─ Gold
+└─ Season
+
+FRAGRANCE
+└─ Rarity
+└─ IncomeMultiplier
+└─ WorkerSpeedMultiplier
+└─ Duration
+
+GLITTER
+└─ Type
+└─ Color
+└─ Pattern
+└─ Rarity
+└─ Gold = 0
+
+GLOSSY
+└─ Type
+└─ Rarity
+└─ Gold = 0
+
+WAKPPU
+└─ Rarity
+└─ Season
+└─ Cost
+└─ RewardTable
+```
+
+그리고 **최종 수익은 우리가 확정한 그대로**:
+
+> **(BaseGold + Topping1 + Topping2 + ... + ToppingN) × FragranceMultiplier**
+
+Dye / Glitter / Glossy는 **수익에 영향 없음.**
+
+---
+
+## 그리고 현실 인기도를 어떻게 사용할 거냐
+
+여기가 상당히 중요해.
+
+나는 **`현실 인기도`라는 필드를 게임 데이터에 절대 넣지 않는 것**을 추천해.
+
+대신 개발할 때만 다음처럼 판단하는 거야.
+
+**현실 자료 → 디자인 판단 → 게임 Rarity / Gold**
+
+예를 들어:
+
+**Bingsu Beads**
+
+- 현실 존재 ✔
+- 실제 슬라임에서 흔히 사용 ✔
+- 크런치/ASMR 효과 강함 ✔
+- 관련 상품/공급품 다수 존재 ✔ [Dope Slimes LLC](https://dopeslimes.com/pages/suppliescollection?utm_source=chatgpt.com)
+- 커뮤니티에서도 선호 확인 ✔ [Reddit](https://www.reddit.com/r/Slime/comments/1sqiiub/qotd_which_addins_do_you_love_most_in_slime/?utm_source=chatgpt.com)
+
+→ **Rare\~Epic**
+
+반면 그냥 작은 별 스프링클:
+
+- 현실에서 흔함
+- 시각적 효과는 좋음
+- 촉감 기여도 낮음
+
+→ **General**
+
+그리고 Crystal Beads 같은 경우:
+
+- 시각적 가치 높음
+- 촉감도 있음
+- 희소한 느낌
+- Mythical 연출에 적합
+
+→ **Mythical**
+
+즉,
+
+**현실 인기도 ≠ 게임 능력치**
+
+하지만
+
+**현실 인기도 + 희소성 + 촉감 + ASMR + 시각적 가치 + 테마성 → 게임 등급 결정**
+
+이렇게 쓰는 게 제일 자연스럽다.
+
+그리고 이 방식이면 나중에 네가 \*\*“왜 이게 Legendary인데?”\*\*라고 물어봤을 때도 각각 근거를 설명할 수 있어.
+
+**결론적으로 현재 표는 “경제/데이터 구조의 기준표”로 잡고, 다음 단계에서 각 아이템의 실제 획득처와 Gacha 해금 등급까지 연결하면 된다.**
+
+. 우선 향료는 15분 추천
+5분은 너무 짧다고 봐.
+무료 Wakppu 티켓이 20분마다 1장이니까:
+- 향료 5분 → 티켓 1장으로 5분만 강해짐 → 체감이 약함
+- 향료 15분 → 20분 중 15분 동안 효과 → 75% 가동률
+- 향료 20분 → 무료 티켓 주기와 정확히 겹침 → 너무 편하고 지속시간의 의미가 약해짐
+- 30분 → 초반 플레이어 입장에서 너무 긴 버프
+내 추천
+Fragrance 기본 지속시간 = 15분
+그리고 이렇게 잡는 게 좋음.
+무료 Wakppu 티켓: 20분
+향료 효과: 15분
+추가 티켓: 유료 구매 가능
+
+그러면 플레이어가 계속 플레이할 경우
+향료 15분 → 5분 일반 상태 → 다음 티켓 → 향료 15분
+이라는 리듬이 생겨.
+특히 네 게임은 그냥 클릭커가 아니라 ASMR + 슬라임 제작 + 노동자 관찰이니까, 5분마다 버프가 끝나는 것보다는 15분 정도가 게임 한 세션을 유지하기 좋다.
+
+향료는 수익 ×1.5
+노동자 속도 ×1.5 
+
+둘 다 주는 게 아니라 향료 종류에 따라 둘 중 하나만 주는 거임
+그리고 향료 등급에 따라 배수도 다르게 하자.
+1.2도 있고 2배도 있고 이렇게 
+
+Rebirth 비용, Worker 쿨다운, 패드 수익 발생 주기는 몇으로 하는 거 추천하냐
+
+플레이어 10초 워커 12초 너무 길어.
+뛰는 모션에서 패드 위 슬라임 한 번 밟을 때마다 올라가야 함.
+버는 돈 올라가는 건 뛰는 속도를 높여서 한 번 밟는 속도가 빨라지면서 수익이 올라가는 구조로 가야 함.
+최종 고용할 수 있는 노동자 수에 제한 둬야 함.
+초반에는 빠르게 새로운 시스템을 열고, 중반부터 점점 목표가 길어지는 시스템 좋음 이렇게 가야 함.
+그리고 워커 돌아다닐 때 그냥 마네킹처럼 서서 다니는데 뛰는 모션 보여줘야 함. 이거 프롬포트 작성할 때 추가해. 플레이어 뛰어다니는 것처럼 팔다리 움직여서 뛰어다녀야 함.
+
+뛰는 모션에서 패드 위 슬라임 한 번 밟을 때마다 올라가야 함.
+버는 돈 올라가는 건 뛰는 속도를 높여서 한 번 밟는 속도가 빨라지면서 수익이 올라가는 구조로 가야 함.
+-> 시스템 이렇게 바꾸면 경제 시스템 변경해야 되는 부분 있는지 있으면 보완해서 보고 바람
+
+패드는 9칸으로 늘리고 워커 최대 고용 수도 9 명으로 하자
+
+경제 밸런스 잘 잡힌 걸로 최종 리스트 줘
+Rebirth 비용, worker 수익 구조, 아이템 등급별로 정리하여 가격 측정한 리스트
+아이템은 베이스/토핑/향료/염료/글로시 다섯 분류임
+먼저 보낸 리스트 보고 네가 베이스 겹치는 것 정리한 것 잘했다. 그런 식으로 리스트 작성하고 지금까지 나온 데이터로 경제 밸런스 맞춰서 금액 선정해라.
+데이터 파일 구조는 니가 말한 것 그대로 간다.
+이름
+ID
+등급
+크기
+타입
+Gold
+효과
+획득처
+왁뿌 등장 여부
+
+염료-염료는 DYE였나 시스템 쓸 거라서 안 나눠도 되나 아니면 소프트계열 색상 예쁘니까 화이트 섞어야만 만들 수 있으니 화이트 컬러를 일반 등급보다 높게 주든지
+
+최종 리스트 나오기 전에 더 결정해야 할 것 있으면 말해라
+
+"Glossy & Glitter"를 하나의 분류로 묶어
+그런데 하나로 묶으면 둘 다 적용 못하는 거 알지 이게 더 오류 줄이는 방법인가?
+
+토핑은 같은 디자인에서 크기 s/m/L 나눠서 L부터 높은 등급 때리고
+베이스는 사이즈 하나.
+
+향료 들어간 완성된 슬라임이 pad_1에는 수익버프 슬라임, pad_3에는 속도버프 슬라임 배치하면
+해당 패드 밟을 때는 해당 패드의 버프 작동하게 해야 함.
+
+슬라임 베이스와 토핑에 따라 섬세한 소리 들리는 건 쪼물 테이블에서 직접 만지고 놀 때 섬세하게 구현하고 일반 패드 위에서 노동자 및 플레이어가 뛰어다닐 때는 설치된 베이스들 중 한 가지 베이스 소리만 들리게 하자. 이 베이스 소리는 패드에 설치한 베이스들 소리 중 플레이어가 원하는 소리 선택할 수 있게 해라.
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+Base 중복
+- Sherbet으로 진행
+- Jelly Cube / Topping
+-  Butter으로 진행
+-  Cloud로 진행
+- Base의 Glossy와 Glossy & Glitter의 Glossy 역할 중복 -> Base에서 삭제하고 글로시 효과로 가자
+
+Topping 등급
+- 특히 L부터 높은 등급이라는 새 규칙에 현재 Rarity가 제대로 맞는지. ->Rarity가 먼 소린지 모르겠음 L부터 높은 등급 괜찮음
+
+
+Fragrance
+- 기존 30분 → 네가 예전에 검토했던 15분 중 어느 쪽으로 갈지. -> 15분
+- Income/Speed 효과 수치. ->  네가 적당하게 배분한 거 아님?
+
+Dye
+- White를 Rare로 올리는 것. -> 올려
+- 혼합 결과를 고정 레시피로 둘지, 색상 거리 계산만으로 만들지. -> 무슨 소리임? 
+- 혼합 결과를 Wakppu에서 직접 얻을 수 있게 할지. -> 어떻게 하는 게 좋을까
+
+Glossy & Glitter
+- 이번에 처음으로 하나로 합쳤기 때문에 GG011~GG034는 특히 검수 필요. -> 니가 더 화려한 걸 높은 등급으로 잘했껬지. 널 믿어.
+- Glossy/Glitter 동시 적용 불가는 현재 반영. ->  okay
+
+Wakppu 등장 여부
+- 내가 위 표에서 O/X를 임시 배정했으므로 네가 실제 획득 구조와 맞는지 확인 필요.
+-> 베이스는 뺄까? 뭐가 더 재미있겠니 
+
+Rebirth 비용
+- 실제 발걸음 빈도와 9 Worker 운영을 기준으로 최종 시뮬레이션하기 전의 밸런스 초안.
+- 특히 R1~R3가 실제 플레이에서 너무 빨리/느리게 오는지 확인 필요. -> 해 봐야 알지 내가 어케 알아 니가 가상으로 굴려 보면 니가 더 잘 알 듯
+
+Gold 소수 처리
+- Fragrance 적용 후 291.2 같은 값이 생기므로 반드시 규칙 필요. -> 보통 게임 개발할 때 어떻게 하는데 
+
+ㅡㅡ
+
+- 베이스에서 젤리 삭제
+- 색상 거리 계산으로 결정
+- 혼합 결과 Wakppu에 뜨게 해
+- 아래 구조로 진행
+Base
+→ 일반 게임 진행/구매/획득
+Topping
+→ 일반 획득 + 일부 희귀품 Wakppu
+Dye
+→ 기본 획득 + 혼합 + 일부 희귀품 Wakppu
+Fragrance
+→ Wakppu 포함
+Glossy & Glitter
+→ Wakppu 주요 보상
+- 소수점 반올림 처리
+
+
+예를 들어 Legendary인 Topping의 S가 Epic Topping의 L보다 낮은 Gold를 가질 수도 있음. -> 이래도 됨. 
+시즌 토핑은 시즌 가서 추가로 입력할 거임
+Fragrance의 Income/Speed 배치 더 깔끔한 방식으로 ㄱㄱ
+일부 희귀 혼합색만 Wakppu 풀에 넣는 게 좋음. ㄱㄱ 
+
+왁뿌에서 어떤 아이템 나오는지 >
+가챠 등급별 해금 \
+&#x20;\
+이랑 정확히 맞춰. \
+Gacha Area \
+처음 \
+🟡 Basic Wax \
+일반 이상 \
+&#x20;\
+↓ \
+해금 \
+🔵 Rare Wax \
+레어 이상 \
+&#x20;\
+↓ \
+🟣 Epic Wax \
+에픽 이상 \
+&#x20;\
+↓ \
+🟠 Legendary Wax \
+레전더리 이상 \
+&#x20;\
+↓ \
+🌈 Mythical Wax \
+미시컬 \
+&#x20;\
+여기서 중요한 규칙 하나 \
+"Rare Wax에서 무조건 Rare가 나온다"는 의미는 아니게 하자. \
+예를 들어: \
+Rare Wax \
+가능: \
+\- Rare 70% \
+\- Epic 25% \
+\- Legendary 4% \
+\- Mythical 1% \
+이런 식. \
+즉: \
+왁뿌 등급 = 최소 보상 등급 \
+&#x20;\
+이고, \
+그 위 등급이 나올 확률이 존재. \
+그러면 플레이어가: \
+"레어 왁뿌인데 혹시 레전더리 뜨는 거 아냐?" \
+&#x20;\
+하면서 뿌수는 순간의 기대감이 생김. \
+그리고 Mythical은 조금 다르게 \
+Mythical Wax에서는: \
+Mythical 확정 \
+&#x20;\
+으로 가도 됨. \
+왜냐하면 최종 등급을 해금한 플레이어에게 주는 최종 가챠 콘텐츠니까. \
+대신 Mythical 안에서: \
+Mythical Base \
+Mythical Topping \
+Mythical Glitter \
+Mythical Seasonal \
+&#x20;\
+등으로 보상 풀이 다양해지는 것.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Base 중복
+- Sherbet으로 진행
+- Jelly Cube / Topping : 이건 뭐 검수하면 되는 거임 
+-  Butter으로 진행
+-  Cloud로 진행
+- Base의 Glossy와 Glossy & Glitter의 Glossy 역할 중복 -> Base에서 삭제하고 글로시 효과로 가자
+
+Topping 등급
+- 특히 L부터 높은 등급이라는 새 규칙에 현재 Rarity가 제대로 맞는지. ->Rarity가 먼 소린지 모르겠음 L부터 높은 등급 괜찮음
+
+
+Fragrance
+- 기존 30분 → 네가 예전에 검토했던 15분 중 어느 쪽으로 갈지. -> 15분
+- Income/Speed 효과 수치. ->  네가 적당하게 배분한 거 아님?
+
+Dye
+- White를 Rare로 올리는 것. -> 올려
+- 혼합 결과를 고정 레시피로 둘지, 색상 거리 계산만으로 만들지. -> 무슨 소리임? 
+- 혼합 결과를 Wakppu에서 직접 얻을 수 있게 할지. -> 어떻게 하는 게 좋을까
+
+Glossy & Glitter
+- 이번에 처음으로 하나로 합쳤기 때문에 GG011~GG034는 특히 검수 필요. -> 니가 더 화려한 걸 높은 등급으로 잘했껬지. 널 믿어.
+- Glossy/Glitter 동시 적용 불가는 현재 반영. ->  okay
+
+Wakppu 등장 여부
+- 내가 위 표에서 O/X를 임시 배정했으므로 네가 실제 획득 구조와 맞는지 확인 필요.
+-> 베이스는 뺄까? 뭐가 더 재미있겠니 
+
+Rebirth 비용
+- 실제 발걸음 빈도와 9 Worker 운영을 기준으로 최종 시뮬레이션하기 전의 밸런스 초안.
+- 특히 R1~R3가 실제 플레이에서 너무 빨리/느리게 오는지 확인 필요. -> 해 봐야 알지 내가 어케 알아 니가 가상으로 굴려 보면 니가 더 잘 알 듯
+
+Gold 소수 처리
+- Fragrance 적용 후 291.2 같은 값이 생기므로 반드시 규칙 필요. -> 보통 게임 개발할 때 어떻게 하는데
+
+- 베이스에서 젤리 삭제
+- 색상 거리 계산으로 결정
+- 혼합 결과 Wakppu에 뜨게 해
+- 아래 구조로 진행
+Base
+→ 일반 게임 진행/구매/획득
+Topping
+→ 일반 획득 + 일부 희귀품 Wakppu
+Dye
+→ 기본 획득 + 혼합 + 일부 희귀품 Wakppu
+Fragrance
+→ Wakppu 포함
+Glossy & Glitter
+→ Wakppu 주요 보상
+- 소수점 반올림 처리
+
+
+더 검토해야 할 것은?
+
+
+- 베이스에서 젤리 삭제
+- 색상 거리 계산으로 결정
+- 혼합 결과 Wakppu에 뜨게 해
+- 아래 구조로 진행
+Base
+→ 일반 게임 진행/구매/획득
+Topping
+→ 일반 획득 + 일부 희귀품 Wakppu
+Dye
+→ 기본 획득 + 혼합 + 일부 희귀품 Wakppu
+Fragrance
+→ Wakppu 포함
+Glossy & Glitter
+→ Wakppu 주요 보상
+- 소수점 반올림 처리
+
+
+예를 들어 Legendary인 Topping의 S가 Epic Topping의 L보다 낮은 Gold를 가질 수도 있음. -> 이래도 됨. 
+시즌 토핑은 시즌 가서 추가로 입력할 거임
+Fragrance의 Income/Speed 배치 더 깔끔한 방식으로 ㄱㄱ
+일부 희귀 혼합색만 Wakppu 풀에 넣는 게 좋음. ㄱㄱ 
+
+왁뿌에서 어떤 아이템 나오는지 >
+가챠 등급별 해금 \
+&#x20;\
+이랑 정확히 맞춰. \
+Gacha Area \
+처음 \
+🟡 Basic Wax \
+일반 이상 \
+&#x20;\
+↓ \
+해금 \
+🔵 Rare Wax \
+레어 이상 \
+&#x20;\
+↓ \
+🟣 Epic Wax \
+에픽 이상 \
+&#x20;\
+↓ \
+🟠 Legendary Wax \
+레전더리 이상 \
+&#x20;\
+↓ \
+🌈 Mythical Wax \
+미시컬 \
+&#x20;\
+여기서 중요한 규칙 하나 \
+"Rare Wax에서 무조건 Rare가 나온다"는 의미는 아니게 하자. \
+예를 들어: \
+Rare Wax \
+가능: \
+\- Rare 70% \
+\- Epic 25% \
+\- Legendary 4% \
+\- Mythical 1% \
+이런 식. \
+즉: \
+왁뿌 등급 = 최소 보상 등급 \
+&#x20;\
+이고, \
+그 위 등급이 나올 확률이 존재. \
+그러면 플레이어가: \
+"레어 왁뿌인데 혹시 레전더리 뜨는 거 아냐?" \
+&#x20;\
+하면서 뿌수는 순간의 기대감이 생김. \
+그리고 Mythical은 조금 다르게 \
+Mythical Wax에서는: \
+Mythical 확정 \
+&#x20;\
+으로 가도 됨. \
+왜냐하면 최종 등급을 해금한 플레이어에게 주는 최종 가챠 콘텐츠니까. \
+대신 Mythical 안에서: \
+Mythical Base \
+Mythical Topping \
+Mythical Glitter \
+Mythical Seasonal \
+&#x20;\
+등으로 보상 풀이 다양해지는 것.
+
+왁뿌만 수정하자
+예를 들어:
+🔵 Rare Wax
+Rare 이상만 나올 수 있음. !단! 위로 3단계만. 
+
+가능한 보상:
+- Rare 70%
+- Epic 25%
+- Legendary 5%
+ㅡ
+epic에서도 Mythical은 1% 이런 식으로 해 줘 희귀성 높여
+보상 카테고리는 어디에서 튀어나온 거?

@@ -1,0 +1,386 @@
+- 토핑 미니 스프링클을 예를 들어서 설명하겠음
+  미니 스프링클 소형  +0.1
+  미니 스프링클 중형  +0.2
+  미니 스프링클 대형  +0.3
+이런 식으로 일반 등급 내 같은 디자인 토핑인데도 사이즈에 따라 차별화 줄 거임
+이럴 경우 소형은 일반이지만 중형과 대형도 일반에 두는 게 맞는지 대형은 레어에 둘지, 중형부터 레어에 빼고 대형은 에픽으로 둘지. 
+
+
+- 4. 여기서 중요한 건 "토핑의 가치"를 두 종류로 나누는 것
+이건 게임 시스템적으로 굉장히 중요해.
+예를 들어:
+A. 장식형
+딸기 Fimo
+
+시각적으로 예쁨.
+B. 촉감형
+Bingsu Bead
+
+크런치 ASMR 발생.
+C. 복합형
+특별한 대형 Charm
+
+시각 + 희소성.
+그래서 나중에는 단순히
+등급 = Gold
+가 아니라
+등급 + 희소성 + 인기도
+로 보는 게 좋음.
+>>>>>>>> 여기에서 복합형이 내가 위에 말한 부분과 동일한 것 맞는지?
+ㄴ장식형보다 촉감형의 등급을 더 높게 하자.
+
+
+- Pastel Pink
+Baby Blue
+Lavender
+Mint
+Peach
+Cream
+Neon
+Metallic
+Aurora
+
+이런 색상도 dye 자동 시스템으로 배합해서 구현 가능한지?
+
+
+- 글리터는 fine glitter 안에서도 미세 반짝임이 하얀색 분홍색 노랑색 빨간색 검은색 등으로 종류 늘릴 수 있을 것 같음.
+  오묘한 색 변화도 기본 베이스 컬러를 다르게 두고 오로라 야광 역시 색상별로 다양해질 수 있음
+  우주 느낌 역시 마블링 같은 효과 다양하게 늘릴 수 있을 것 같음
+
+참고해서 재료별로 리스트 작성해 줘
+
++ 추가로 왁뿌 같은 건 취급 안 하고 그냥 슬라임만 다뤄? 왁뿌의 경우 현실에서 한 번 뿌시면 끝인 일회성이라 구현하면 계속 뿌술 수 있어서 좋을 것 같은데. 왁뿌 팝잇 같은 걸로 베이스 늘리는 건 복잡해져서 별로임?
+
+
+
+
+
+
+
+
+
+"Glossy & Glitter"를 하나의 분류로 묶어
+그런데 하나로 묶으면 둘 다 적용 못하는 거 알지 이게 더 오류 줄이는 방법인가?
+
+토핑은 같은 디자인에서 크기 s/m/L 나눠서 L부터 높은 등급 때리고
+베이스는 사이즈 하나.
+
+향료 들어간 완성된 슬라임이 pad_1에는 수익버프 슬라임, pad_3에는 속도버프 슬라임 배치하면
+해당 패드 밟을 때는 해당 패드의 버프 작동하게 해야 함.
+
+슬라임 베이스와 토핑에 따라 섬세한 소리 들리는 건 쪼물 테이블에서 직접 만지고 놀 때 섬세하게 구현하고 일반 패드 위에서 노동자 및 플레이어가 뛰어다닐 때는 설치된 베이스들 중 한 가지 베이스 소리만 들리게 하자. 이 베이스 소리는 패드에 설치한 베이스들 소리 중 플레이어가 원하는 소리 선택할 수 있게 해라.
+
+
+이제 Base / Topping / Fragrance / Dye / Glossy 전체 아이템 목록 + ID + 등급 + 크기 + Type + Gold + 효과 + 획득처 + Wakppu 등장 여부**를 하나의 최종 데이터표로 만들고, 그 아래에 **Worker Lv.1~9, 최대 고용 9명, Rebirth 1~N 비용**까지 같은 경제 기준으로 묶어서 줄 수 있어?
+
+
+1. BASE
+현실 슬라임에서 실제로 널리 쓰이는 텍스처들을 중심으로 잡았다. Clear, Butter, Cloud, Floam, Bingsu, Jelly, Glossy 등은 실제 슬라임 판매/자료에서 확인되는 대표적인 텍스처다. Cloud 9 Slime
+ID	Base	Rarity	BaseGold	핵심 촉감/연출
+B001	White Glossy	General	10	기본 쫀득, 버블팝
+B002	Clear	General	12	투명, 강한 팝
+B003	Jelly	General	14	탱글, 젤리감
+B004	Fluffy	General	15	폭신, 부드러움
+B005	Thick Glossy	Rare	20	묵직한 스트레치
+B006	Cloud	Rare	23	보송, 드리즐
+B007	Butter	Rare	25	부드럽고 매트한 질감
+B008	Snow Fizz	Rare	28	사르륵, 바삭
+B009	Floam	Rare	30	폼비즈 크런치
+B010	Sherbet	Rare	32	가볍고 사각한 촉감
+B011	Icee	Epic	38	차갑고 가벼운 드리즐
+B012	Bingsu	Epic	45	강한 크런치
+B013	Fishbowl	Epic	48	단단한 비즈 크런치
+B014	Jelly Cube	Epic	50	큐브+젤리 촉감
+B015	Mochi	Epic	52	탄력, 쫀득
+B016	Crunch Bomb	Legendary	65	대량 파츠 크런치
+B017	Cloud Creme	Legendary	70	크리미+폭신
+B018	Snow Butter	Legendary	75	눈처럼 부드러운 버터
+B019	Nougat	Legendary	80	묵직하고 늘어나는 질감
+B020	Crystal	Mythical	100	투명+크리스털 ASMR
+B021	Aurora	Mythical	110	특수 광택+색변화
+
+
+중요: Glossy를 별도 시스템으로도 두기 때문에 White Glossy / Thick Glossy 같은 Base와 나중의 Glossy Effect는 역할이 다르다.
+2. TOPPING
+여기가 게임의 핵심이다.
+우리가 정한 대로:
+Type = Decoration / Texture / Hybrid
+Size = S / M / L
+슬라임 하나당 최대 5개
+그리고 Texture가 Decoration보다 기본적으로 높은 가치를 가진다.
+실제 슬라임 재료에서도 Bingsu beads, Fishbowl beads, Foam beads, Charms, Fimos, Sprinkles, Foam chunks 등이 반복적으로 판매되고 있다. Dope Slimes LLC
+A. Decoration
+ID	Topping	Type	기본 Rarity	S Gold	M Gold	L Gold
+T001	Mini Sprinkles	Decoration	General	+1	+2	+3
+T002	Heart Confetti	Decoration	General	+1	+2	+3
+T003	Star Confetti	Decoration	General	+1	+2	+3
+T004	Flower Confetti	Decoration	General	+1	+2	+3
+T005	Circle Confetti	Decoration	General	+1	+2	+3
+T006	Rainbow Sprinkles	Decoration	General	+1	+2	+3
+T007	Fimo Fruit	Decoration	Rare	+2	+3	+5
+T008	Fimo Flower	Decoration	Rare	+2	+3	+5
+T009	Sequins	Decoration	Rare	+2	+4	+6
+T010	Star Sequins	Decoration	Rare	+2	+4	+6
+T011	Heart Sequins	Decoration	Rare	+2	+4	+6
+T012	Shell Sequins	Decoration	Rare	+2	+4	+6
+T013	Mini Gem	Decoration	Rare	+3	+5	+7
+T014	Pearl Beads	Decoration	Rare	+3	+5	+7
+T015	Alphabet Beads	Decoration	Rare	+3	+5	+8
+T016	Mini Charms	Decoration	Epic	+5	+8	+12
+T017	Animal Charms	Decoration	Epic	+5	+8	+12
+T018	Food Charms	Decoration	Epic	+5	+9	+13
+T019	Kawaii Charms	Decoration	Epic	+6	+10	+15
+T020	Premium Gem Charms	Decoration	Legendary	+8	+13	+18
+
+
+B. Texture
+여기는 현실에서도 촉감/소리 때문에 존재 가치가 높은 재료들을 위쪽 등급으로 올린다.
+ID	Topping	Type	기본 Rarity	S	M	L
+T021	Small Foam Beads	Texture	General	+2	+3	+4
+T022	Pastel Foam Beads	Texture	Rare	+3	+5	+7
+T023	Large Foam Beads	Texture	Rare	+4	+6	+9
+T024	Bingsu Beads	Texture	Rare	+4	+7	+10
+T025	Iridescent Bingsu Beads	Texture	Epic	+6	+9	+13
+T026	Fishbowl Beads	Texture	Epic	+6	+10	+14
+T027	Glow Fishbowl Beads	Texture	Legendary	+8	+12	+17
+T028	Block Beads	Texture	Epic	+7	+11	+16
+T029	Slushy Beads	Texture	Epic	+6	+10	+15
+T030	Water Beads	Texture	Epic	+7	+11	+16
+T031	Foam Chunks	Texture	Epic	+7	+11	+17
+T032	Sugar Beads	Texture	Epic	+8	+12	+18
+T033	Perlite	Texture	Legendary	+9	+14	+20
+T034	Silica Beads	Texture	Legendary	+10	+15	+22
+T035	Crunch Pebbles	Texture	Legendary	+11	+17	+24
+T036	Crystal Beads	Texture	Mythical	+15	+22	+30
+
+
+실제로 커뮤니티에서도 Bingsu, Perlite, Floam, Block Beads, Sequins 등의 크런치 재료가 강한 선호를 보이는 사례가 확인된다. Reddit
+C. Hybrid
+눈에 보이는 장식 + 만졌을 때의 촉감을 동시에 주는 것.
+ID	Topping	Type	Rarity	S	M	L
+T037	Sprinkle Mix	Hybrid	Rare	+3	+5	+7
+T038	Confetti Bead Mix	Hybrid	Rare	+3	+5	+8
+T039	Candy Beads	Hybrid	Rare	+4	+6	+9
+T040	Boba Beads	Hybrid	Epic	+6	+9	+13
+T041	Jelly Cubes	Hybrid	Epic	+7	+10	+15
+T042	Mini Marshmallow	Hybrid	Epic	+7	+11	+16
+T043	Fruit Jelly Pieces	Hybrid	Epic	+7	+11	+16
+T044	Candy Crunch Mix	Hybrid	Legendary	+9	+14	+20
+T045	Crystal Shard Mix	Hybrid	Legendary	+10	+15	+22
+T046	Aurora Crystal Mix	Hybrid	Mythical	+14	+20	+28
+
+
+실제 상품에서도 boba beads, fruit-themed charms, jelly/candy 테마, bingsu 등을 섞어 시각과 촉감을 동시에 만드는 구성이 흔하다. FlipHTML5
+3. SEASONAL TOPPING
+이건 일반 Topping 테이블과 별도 풀로 관리하는 게 좋다.
+Season	Topping	Type	Rarity
+Valentine	Heart Charm	Decoration	Rare
+Valentine	Chocolate Heart	Hybrid	Epic
+Valentine	Pink Heart Sequins	Decoration	Rare
+Spring	Cherry Blossom	Decoration	Rare
+Spring	Butterfly	Decoration	Rare
+Spring	Flower Beads	Hybrid	Epic
+Summer	Seashell	Decoration	Rare
+Summer	Starfish	Decoration	Rare
+Summer	Ocean Beads	Texture	Epic
+Halloween	Pumpkin	Decoration	Rare
+Halloween	Ghost	Decoration	Epic
+Halloween	Bat	Decoration	Epic
+Halloween	Eyeball	Hybrid	Epic
+Halloween	Black Spider	Hybrid	Legendary
+Christmas	Snowflake	Decoration	Rare
+Christmas	Santa	Decoration	Epic
+Christmas	Snowman	Decoration	Epic
+Christmas	Christmas Tree	Decoration	Epic
+Christmas	Candy Cane	Hybrid	Rare
+Christmas	Snow Crystal	Texture	Legendary
+
+
+실제로 슬라임 믹스인에서도 계절별 confetti/holiday shapes가 오래전부터 사용되고 있고, 현재 상품들도 테마별 charm을 적극적으로 활용한다. Ultimate Slime Guide
+4. DYE
+Dye는 Gold = 0.
+그리고 네가 원했던 것처럼 모든 색을 별도 아이템으로 만드는 게 아니라 색상 조합 시스템으로 가는 게 맞다.
+기본 Dye
+ID	Dye	Color	Rarity
+D001	Red	Red	General
+D002	Orange	Orange	General
+D003	Yellow	Yellow	General
+D004	Green	Green	General
+D005	Blue	Blue	General
+D006	Cyan	Cyan	General
+D007	Purple	Purple	General
+D008	Pink	Pink	General
+D009	White	White	General
+D010	Black	Black	General
+
+
+혼합 결과
+결과	조합
+Pastel Pink	Pink + White
+Baby Blue	Blue + White
+Lavender	Purple + White
+Mint	Green + Cyan + White
+Peach	Orange + Pink + White
+Cream	Yellow + White
+Lilac	Purple + Pink + White
+Sky Blue	Blue + Cyan + White
+Coral	Red + Orange + White
+Lemon	Yellow + White
+Rose	Red + Pink
+Aqua	Cyan + Blue
+Navy	Blue + Black
+Wine	Red + Purple + Black
+Chocolate	Red + Yellow + Black
+
+
+그리고 별도 특수 효과:
+Neon / Metallic / Pearl / Aurora / Transparent Tint
+이걸 Color와 분리한다.
+즉:
+Pastel Pink + Aurora
+Baby Blue + Pearl
+Lavender + Metallic
+
+같은 조합이 가능해진다.
+5. FRAGRANCE
+실제 슬라임용 향료 판매 목록에서도 과일, 디저트, 음료, 꽃, 허브 계열이 매우 다양하게 쓰인다. 실제 판매되는 슬라임 향료에서도 Peach, Strawberry, Blueberry, Grape, Mango, Vanilla, Cake, Cotton Candy, Lavender, Rose, Coffee, Mint 등이 확인된다. Slimeatory
+게임에서는 너무 잘게 쪼개지 않고 24종 정도가 적당하다.
+ID	Fragrance	Rarity	Income Multiplier	Worker Speed	Duration
+F001	Strawberry	General	×1.10	×1.10	30m
+F002	Blueberry	General	×1.10	×1.10	30m
+F003	Grape	General	×1.10	×1.10	30m
+F004	Apple	General	×1.10	×1.10	30m
+F005	Lemon	General	×1.10	×1.10	30m
+F006	Orange	General	×1.10	×1.10	30m
+F007	Peach	Rare	×1.20	×1.20	30m
+F008	Mango	Rare	×1.20	×1.20	30m
+F009	Cherry	Rare	×1.20	×1.20	30m
+F010	Watermelon	Rare	×1.20	×1.20	30m
+F011	Pineapple	Rare	×1.20	×1.20	30m
+F012	Coconut	Rare	×1.20	×1.20	30m
+F013	Cotton Candy	Epic	×1.30	×1.30	30m
+F014	Bubble Gum	Epic	×1.30	×1.30	30m
+F015	Vanilla	Epic	×1.30	×1.30	30m
+F016	Cake	Epic	×1.30	×1.30	30m
+F017	Chocolate	Epic	×1.30	×1.30	30m
+F018	Sweet Cream	Epic	×1.30	×1.30	30m
+F019	Coffee	Legendary	×1.40	×1.40	30m
+F020	Lavender	Legendary	×1.40	×1.40	30m
+F021	Rose	Legendary	×1.40	×1.40	30m
+F022	Jasmine	Legendary	×1.40	×1.40	30m
+F023	Aurora Berry	Mythical	×1.50	×1.50	30m
+F024	Dream Cream	Mythical	×1.50	×1.50	30m
+
+
+그리고 우리가 정한 규칙대로:
+향료 효과는 완성 슬라임을 Pad에 올리는 순간 시작.
+온라인에서만 적용.
+오프라인 수익에는 적용하지 않음.
+6. GLITTER
+Glitter는 경제적 Gold = 0.
+대신 Type / Color / Pattern을 분리한다.
+실제 슬라임용 글리터 시장에서도 Fine, Chunky, Holographic, Iridescent 등이 별도 제품군으로 존재하고, 투명/클라우드/버터/크런치 계열에 맞춰 다른 글리터를 사용한다. PDA Glitter
+Fine
+Glitter	Colors
+Fine	White / Pink / Red / Orange / Yellow / Green / Blue / Purple / Black
+Fine Metallic	Gold / Silver
+Fine Pearl	White / Pink / Blue / Lavender
+
+
+Holographic
+Glitter	Colors
+Holographic	Pink / Blue / Purple / Green / Rainbow
+Holographic Silver	Silver
+Holographic Gold	Gold
+
+
+Iridescent
+Glitter	Colors
+Iridescent	Pink / Blue / Purple / Green / Rainbow
+
+
+Aurora
+Glitter	Colors
+Aurora	Pink / Blue / Purple / Green / Rainbow
+
+
+Glow
+Glitter	Colors
+Glow	White / Pink / Blue / Green / Yellow / Purple
+
+
+Chunky Shape
+Pattern
+Star
+Heart
+Moon
+Snowflake
+Flower
+Butterfly
+Circle
+Hexagon
+Diamond
+
+
+Galaxy
+Galaxy는 하나의 Glitter 아이템이 아니라 패턴군으로 만든다.
+Galaxy Pattern
+Classic Galaxy
+Nebula
+Aurora Galaxy
+Rose Galaxy
+Starfield
+Deep Space
+
+
+실제 Galaxy slime에서도 deep purple/blue/black + holographic/iridescent + star/moon 형태의 조합이 사용된다. Clean Stylish Homes
+7. GLOSSY
+Glossy도 Gold = 0.
+이건 Glitter와 달리 빛 반사/표면 질감을 담당한다.
+ID	Glossy	Rarity	Visual
+G001	Soft Glossy	General	은은한 광택
+G002	Glossy	General	기본 물광
+G003	Wet Glossy	Rare	젖은 듯한 광택
+G004	Thick Glossy	Rare	두껍고 강한 광택
+G005	High Gloss	Epic	강한 표면 반사
+G006	Pearl Gloss	Epic	진주광
+G007	Crystal Gloss	Legendary	유리 같은 반사
+G008	Holographic Gloss	Legendary	무지개 반사
+G009	Aurora Gloss	Mythical	각도에 따른 색변화
+G010	Prism Gloss	Mythical	프리즘 광택
+
+
+여기서 Glossy는 Base를 대체하지 않는다.
+예를 들어:
+Clear Base  
+- Baby Blue Dye
+- Aurora Glitter
+- Aurora Gloss
+- Peach Fragrance
+- Bingsu Beads
+
+이런 식으로 조합할 수 있다.
+8. WAKPPU
+이건 이제 Gacha 전용 콘텐츠로 확실히 분리.
+그리고 네가 정한 핵심 규칙:
+Wakppu 등급 = 최소 보상 등급
+
+즉 Rare Wakppu를 깠는데 무조건 Rare만 나오는 게 아니다.
+Rare 이상이 나온다.
+ID	Wakppu	Rarity	최소 보상	권장 보상 테이블
+W001	Basic Wax Ball	General	General	G 75 / R 20 / E 4 / L 1
+W002	Rare Wax Ball	Rare	Rare	R 70 / E 25 / L 4 / M 1
+W003	Epic Wax Ball	Epic	Epic	E 75 / L 20 / M 5
+W004	Legendary Wax Ball	Legendary	Legendary	L 80 / M 20
+W005	Mythical Wax Ball	Mythical	Mythical	M 100
+
+
+그리고 Seasonal Wakppu:
+Wakppu	Season	보상
+Valentine Wax	Valentine	Valentine Topping / Glitter / Dye
+Spring Wax	Spring	Spring Topping / Flower
+Summer Wax	Summer	Ocean / Beach Topping
+Halloween Wax	Halloween	Halloween Topping
+Christmas Wax	Christmas	Christmas Topping / Glitter
+Aurora Wax	Special	Aurora 계열
+Galaxy Wax	Special	Galaxy 계열
